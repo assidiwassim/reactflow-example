@@ -21,8 +21,8 @@ const DnDFlow = () => {
 
   const defaultEdgeOptions = useMemo(
     () => ({
-      type: 'smoothstep',
-      style: { strokeWidth: 2, stroke: '#9ca3af', strokeDasharray: '5 5' },
+      type: 'default',
+      style: { strokeWidth: 2.5, stroke: '#9ca3af', strokeDasharray: '5 5' },
       animated: true,
     }),
     []

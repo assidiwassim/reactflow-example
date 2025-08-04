@@ -40,7 +40,7 @@ export function CustomNode({ data }: { data: CustomNodeData }) {
   return (
     <div className={`bg-white border-2 ${styles.borderColor} rounded-lg shadow-md w-64 hover:shadow-lg transition-shadow`}>
       <div className="relative p-4">
-        <Handle type="target" position={Position.Left} className="!w-3 !h-3 !-ml-5" style={{ backgroundColor: styles.handleColor, border: '2px solid white' }} />
+        <Handle type="target" position={Position.Left} className="!w-3 !h-3 !absolute !-left-1.5 !top-1/2 !-translate-y-1/2" style={{ backgroundColor: styles.handleColor, border: '2px solid white' }} />
         <div className="flex items-start">
           {Icon && <div className="w-8 h-8 flex items-center justify-center rounded-md mr-4"><Icon /></div>}
           <div className="flex flex-col flex-grow">
@@ -49,7 +49,7 @@ export function CustomNode({ data }: { data: CustomNodeData }) {
             <div className="text-sm text-gray-600 mt-1">{data.description}</div>
           </div>
         </div>
-        <Handle type="source" position={Position.Right} className="!w-3 !h-3 !-mr-5" style={{ backgroundColor: styles.handleColor, border: '2px solid white' }} />
+        <Handle type="source" position={Position.Right} className="!w-3 !h-3 !absolute !-right-1.5 !top-1/2 !-translate-y-1/2" style={{ backgroundColor: styles.handleColor, border: '2px solid white' }} />
       </div>
       {data.status === 'Configured' && (
         <div className="px-4 pb-4">
