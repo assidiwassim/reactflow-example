@@ -7,8 +7,6 @@ export type CustomNodeData = {
   icon: string;
 };
 
-
-
 export function CustomNode({ id, data }: { id: string; data: CustomNodeData }) {
   const { deleteElements } = useReactFlow();
   const Icon = data.icon ? getIcon(data.icon) : null;
