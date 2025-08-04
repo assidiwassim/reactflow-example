@@ -1,5 +1,6 @@
 import { Handle, Position } from '@xyflow/react';
 import { getIcon } from './icons';
+import { CogIcon } from './CogIcon';
 
 const typeStyles = {
   trigger: {
@@ -38,7 +39,12 @@ export function CustomNode({ data }: { data: CustomNodeData }) {
   const styles = typeStyles[data.type] || {};
 
   return (
-    <div className={`bg-white border-2 ${styles.borderColor} rounded-lg shadow-md w-64 hover:shadow-lg transition-shadow`}>
+    <div className={`group bg-white border-2 ${styles.borderColor} rounded-lg shadow-md w-64 hover:shadow-lg transition-shadow relative`}>
+      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+        <button data-action="configure" className="p-1 rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-800">
+          <CogIcon className="w-5 h-5" />
+        </button>
+      </div>
       <div className="relative p-4">
         <Handle type="target" position={Position.Left} className="!w-3 !h-3 !absolute !-left-1.5 !top-1/2 !-translate-y-1/2" style={{ backgroundColor: styles.handleColor, border: '2px solid white' }} />
         <div className="flex items-start">

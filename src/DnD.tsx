@@ -71,9 +71,14 @@ const DnDFlow = () => {
     [reactFlowInstance, setNodes]
   );
 
-  const onNodeDoubleClick = useCallback((_: React.MouseEvent, node: Node) => {
-    setSelectedNode(node);
-    setIsModalOpen(true);
+  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+    const target = event.target as HTMLElement;
+    const action = target.closest('[data-action]')?.getAttribute('data-action');
+
+    if (action === 'configure') {
+      setSelectedNode(node);
+      setIsModalOpen(true);
+    }
   }, []);
 
   const handleModalClose = () => {
@@ -126,7 +131,7 @@ const DnDFlow = () => {
               onInit={setReactFlowInstance}
               onDrop={onDrop}
               onDragOver={onDragOver}
-              onNodeDoubleClick={onNodeDoubleClick}
+              onNodeClick={onNodeClick}
               defaultEdgeOptions={defaultEdgeOptions}
               fitView
               attributionPosition="bottom-left"
