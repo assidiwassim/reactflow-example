@@ -3,7 +3,7 @@ import Header from './Header';
 
 function App() {
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen ">
       <Header />
       <main className="flex-grow">
         <DnDFlow />

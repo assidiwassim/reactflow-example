@@ -1,12 +1,10 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { ReactFlow, ReactFlowProvider, addEdge, useNodesState, useEdgesState, Controls } from '@xyflow/react';
+import { ReactFlow, ReactFlowProvider, addEdge, useNodesState, useEdgesState, Controls, Background, MiniMap, Panel } from '@xyflow/react';
 import type { Connection, Edge, Node, ReactFlowInstance } from '@xyflow/react';
-
 import '@xyflow/react/dist/style.css';
 
 import Sidebar from './Sidebar';
 import { CustomNode } from './CustomNode';
-
 
 
 const initialNodes: Node[] = [];
@@ -71,27 +69,47 @@ const DnDFlow = () => {
     <div className="flex flex-grow p-5 gap-5">
       <Sidebar />
       <ReactFlowProvider>
-        <div className="flex-grow bg-white rounded-lg shadow-lg p-5 relative" ref={reactFlowWrapper}>
-            <h2 className="text-lg font-semibold text-gray-800 mb-5">Workflow Canvas</h2>
-            <Controls showInteractive={false} showFitView={false} />
-            <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
-                onInit={setReactFlowInstance}
-                onDrop={onDrop}
-                onDragOver={onDragOver}
-                fitView
-                nodeTypes={nodeTypes}
-            >
-                {nodes.length === 0 && (
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-400 text-base border-2 border-dashed border-gray-300 px-16 py-10 rounded-lg pointer-events-none">
-                        Drag components here
-                    </div>
-                )}
-            </ReactFlow>
+        <div className="flex-grow bg-white rounded-lg border p-5 relative" ref={reactFlowWrapper}>
+          <h2 className="text-lg font-semibold text-gray-800 mb-5">Workflow Canvas</h2>
+          <hr className="my-5" />
+          <Controls />
+          <div className="p-0 h-[540px]">
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onInit={setReactFlowInstance}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            fitView
+            attributionPosition="bottom-left"
+            className="bg-gray-50"
+            minZoom={0.5} 
+            maxZoom={1.5}
+            nodeTypes={nodeTypes}
+          >
+            <Background gap={20} size={1} />
+            <MiniMap
+              nodeColor={(node) => {
+                switch (node.type) {
+                  case 'trigger': return '#10b981';
+                  case 'condition': return '#3b82f6';
+                  case 'action': return '#8b5cf6';
+                  default: return '#6b7280';
+                }
+              }}
+              className="!bg-white !border-gray-200"
+            />
+            <Panel position="top-left">
+              <div className="bg-white p-2 rounded-lg shadow-sm border text-xs text-gray-600">
+                Drag nodes from the left panel to build your workflow
+              </div>
+            </Panel>
+           
+          </ReactFlow>
+          </div>
         </div>
       </ReactFlowProvider>
     </div>

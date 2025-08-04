@@ -68,7 +68,7 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="w-80 bg-white rounded-xl p-3 shadow-lg overflow-y-auto flex flex-col gap-4">
+    <aside className="w-80 bg-white rounded-xl p-3 overflow-y-auto flex flex-col gap-4">
       <Collapsible
         title="Triggers"
         count={triggerNodes.length}
