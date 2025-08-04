@@ -5,13 +5,16 @@ import type { Connection, Edge, Node, ReactFlowInstance } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
 import Sidebar from './Sidebar';
+import { CustomNode } from './CustomNode';
 
 import './index.css';
 
 const initialNodes: Node[] = [];
 
 let id = 0;
-const getId = () => `dndnode_${id++}`;
+const getId = () => `${id++}`;
+
+const nodeTypes = { custom: CustomNode };
 
 const DnDFlow = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -35,22 +38,28 @@ const DnDFlow = () => {
         return;
       }
 
-      const type = event.dataTransfer.getData('application/reactflow-type');
-      const label = event.dataTransfer.getData('application/reactflow-label');
+      const nodeDataString = event.dataTransfer.getData('application/reactflow');
 
-      if (typeof type === 'undefined' || !type) {
+      if (!nodeDataString) {
         return;
       }
+
+      const nodeData = JSON.parse(nodeDataString);
 
       const position = reactFlowInstance.screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
       });
+
       const newNode: Node = {
         id: getId(),
-        type,
+        type: 'custom',
         position,
-        data: { label },
+        data: {
+          label: nodeData.label,
+          description: nodeData.description,
+          icon: nodeData.icon,
+        },
       };
 
       setNodes((nds) => nds.concat(newNode));
@@ -74,6 +83,7 @@ const DnDFlow = () => {
                 onDrop={onDrop}
                 onDragOver={onDragOver}
                 fitView
+                nodeTypes={nodeTypes}
             >
                 <Controls />
                 {nodes.length === 0 && (

@@ -1,5 +1,4 @@
 import { Handle, Position } from '@xyflow/react';
-import type { NodeProps } from '@xyflow/react';
 import { getIcon } from './icons';
 
 export type CustomNodeData = {
@@ -8,7 +7,7 @@ export type CustomNodeData = {
   icon: string;
 };
 
-export function CustomNode({ data }: NodeProps<CustomNodeData>) {
+export function CustomNode({ data }: { data: CustomNodeData }) {
   const Icon = data.icon ? getIcon(data.icon) : null;
 
   if (!Icon) {
