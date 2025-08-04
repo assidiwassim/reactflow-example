@@ -66,7 +66,7 @@ const DnDFlow = () => {
   );
 
   return (
-    <div className="flex flex-grow p-5 gap-5">
+    <div className="flex flex-grow p-5 gap-5 h-full overflow-hidden">
       <Sidebar />
       <ReactFlowProvider>
         <div className="flex-grow bg-white rounded-lg border p-5 relative" ref={reactFlowWrapper}>
