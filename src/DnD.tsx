@@ -63,7 +63,7 @@ const DnDFlow = () => {
         id: getId(),
         type: 'custom',
         position,
-        data: nodeData,
+        data: { ...nodeData, isConfigured: false, config: {} },
       };
 
       setNodes((nds) => nds.concat(newNode));
@@ -97,7 +97,8 @@ const DnDFlow = () => {
             data: {
               ...node.data,
               label: newLabel,
-              status: 'Configured',
+              isConfigured: true,
+              config: { ...(node.data.config || {}), label: newLabel },
             },
           };
         }

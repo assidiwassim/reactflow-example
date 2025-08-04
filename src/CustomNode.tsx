@@ -29,9 +29,10 @@ const typeStyles = {
 export type CustomNodeData = {
   label: string;
   description: string;
-  icon: string;
   type: 'trigger' | 'condition' | 'action';
-  status: string;
+  icon: string;
+  isConfigured: boolean;
+  config?: { [key: string]: any };
 };
 
 export function CustomNode({ data }: { data: CustomNodeData }) {
@@ -57,10 +58,10 @@ export function CustomNode({ data }: { data: CustomNodeData }) {
         </div>
         <Handle type="source" position={Position.Right} className="!w-3 !h-3 !absolute !-right-1.5 !top-1/2 !-translate-y-1/2" style={{ backgroundColor: styles.handleColor, border: '2px solid white' }} />
       </div>
-      {data.status === 'Configured' && (
+      {data.isConfigured && (
         <div className="px-4 pb-4">
           <div className={`text-xs font-medium px-3 py-1 rounded-md ${styles.badgeBg} ${styles.badgeText}`}>
-            {data.status}
+            Configured
           </div>
         </div>
       )}
