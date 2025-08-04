@@ -4,11 +4,10 @@ interface CollapsibleProps {
   title: string;
   count: number;
   icon: React.ComponentType<{ className?: string }>;
-  color: string;
-  iconBgColor: string;
-  iconColor: string;
   children: ReactNode;
-  className?: string;
+  sectionClasses: string;
+  iconBgClass: string;
+  iconClass: string;
 }
 
 const ChevronDown = () => (
@@ -17,26 +16,26 @@ const ChevronDown = () => (
   </svg>
 );
 
-export const Collapsible: React.FC<CollapsibleProps> = ({ title, count, icon: Icon, color, iconBgColor, iconColor, children, className }) => {
+export const Collapsible: React.FC<CollapsibleProps> = ({ title, count, icon: Icon, children, sectionClasses, iconBgClass, iconClass }) => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className={`collapsible-section ${className || ''}`} style={{ backgroundColor: color }}>
-      <div className="collapsible-header" onClick={() => setIsOpen(!isOpen)}>
-        <div className="header-left">
-          <div className="header-icon" style={{ backgroundColor: iconBgColor }}>
-            <Icon className={iconColor} />
+    <div className={`p-3 rounded-xl border ${sectionClasses}`}>
+      <div className="flex justify-between items-center cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+        <div className="flex items-center gap-3">
+          <div className={`w-10 h-10 flex items-center justify-center rounded-lg ${iconBgClass}`}>
+            <Icon className={iconClass} />
           </div>
-          <div className="header-title">
-            <h4>{title}</h4>
-            <p>{count} available</p>
+          <div>
+            <h4 className="font-semibold text-gray-800">{title}</h4>
+            <p className="text-sm text-gray-500">{count} available</p>
           </div>
         </div>
-        <div className={`chevron-wrapper ${isOpen ? 'open' : ''}`}>
+        <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
           <ChevronDown />
         </div>
       </div>
-      {isOpen && <div className="collapsible-content">{children}</div>}
+      {isOpen && <div className="pt-3 flex flex-col gap-2">{children}</div>}
     </div>
   );
 };

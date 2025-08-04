@@ -7,7 +7,7 @@ import '@xyflow/react/dist/style.css';
 import Sidebar from './Sidebar';
 import { CustomNode } from './CustomNode';
 
-import './index.css';
+
 
 const initialNodes: Node[] = [];
 
@@ -68,11 +68,11 @@ const DnDFlow = () => {
   );
 
   return (
-    <div className="dndflow">
+    <div className="flex flex-grow p-5 gap-5">
       <Sidebar />
       <ReactFlowProvider>
-        <div className="reactflow-wrapper" ref={reactFlowWrapper}>
-            <h2 className="canvas-title">Workflow Canvas</h2>
+        <div className="flex-grow bg-white rounded-lg shadow-lg p-5 relative" ref={reactFlowWrapper}>
+            <h2 className="text-lg font-semibold text-gray-800 mb-5">Workflow Canvas</h2>
             <Controls showInteractive={false} showFitView={false} />
             <ReactFlow
                 nodes={nodes}
@@ -87,7 +87,9 @@ const DnDFlow = () => {
                 nodeTypes={nodeTypes}
             >
                 {nodes.length === 0 && (
-                    <div className="placeholder">Drag components here</div>
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-400 text-base border-2 border-dashed border-gray-300 px-16 py-10 rounded-lg pointer-events-none">
+                        Drag components here
+                    </div>
                 )}
             </ReactFlow>
         </div>

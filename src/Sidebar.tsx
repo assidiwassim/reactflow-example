@@ -8,18 +8,18 @@ const onDragStart = (event: React.DragEvent, nodeData: { label: string; descript
   event.dataTransfer.effectAllowed = 'move';
 };
 
-const Node = ({ data, icon: Icon }: { data: { label: string; description: string; icon: string }; icon: React.ComponentType }) => (
+const Node = ({ data, icon: Icon, nodeBorderColor, iconBgColor }: { data: { label: string; description: string; icon: string }; icon: React.ComponentType; nodeBorderColor: string; iconBgColor: string; }) => (
   <div
-    className="draggable-node"
+    className={`flex items-center p-3 bg-white border rounded-lg cursor-grab transition-shadow hover:shadow-md ${nodeBorderColor}`}
     onDragStart={(event) => onDragStart(event, data)}
     draggable
   >
-    <div className="node-icon-wrapper">
+    <div className={`w-8 h-8 flex items-center justify-center rounded-md mr-3 ${iconBgColor}`}>
       <Icon />
     </div>
-    <div className="node-content">
-      <div className="node-title">{data.label}</div>
-      <div className="node-description">{data.description}</div>
+    <div className="flex flex-col">
+      <div className="font-medium text-gray-800">{data.label}</div>
+      <div className="text-xs text-gray-500">{data.description}</div>
     </div>
   </div>
 );
@@ -43,45 +43,60 @@ const actionNodes = [
 ];
 
 const Sidebar = () => {
+  const sectionStyles = {
+    triggers: {
+      nodeBorderColor: 'border-green-200',
+      iconBgColor: 'bg-green-50',
+      sectionClasses: 'bg-green-50 border-green-200',
+      iconBgClass: 'bg-green-500',
+      iconClass: 'stroke-white',
+    },
+    conditions: {
+      nodeBorderColor: 'border-blue-200',
+      iconBgColor: 'bg-blue-50',
+      sectionClasses: 'bg-blue-50 border-blue-200',
+      iconBgClass: 'bg-blue-500',
+      iconClass: 'stroke-white',
+    },
+    actions: {
+      nodeBorderColor: 'border-purple-200',
+      iconBgColor: 'bg-purple-50',
+      sectionClasses: 'bg-purple-50 border-purple-200',
+      iconBgClass: 'bg-purple-500',
+      iconClass: 'stroke-white',
+    },
+  };
+
   return (
-    <aside className="sidebar">
+    <aside className="w-80 bg-white rounded-xl p-3 shadow-lg overflow-y-auto flex flex-col gap-4">
       <Collapsible
-        className="triggers-section"
         title="Triggers"
         count={triggerNodes.length}
         icon={TriggersIcon}
-        color="#f0fdf4"
-        iconBgColor="#10b981"
-        iconColor="icon-white"
+        {...sectionStyles.triggers}
       >
         {triggerNodes.map((node, index) => (
-          <Node key={index} data={node.data} icon={node.icon} />
+          <Node key={index} data={node.data} icon={node.icon} {...sectionStyles.triggers} />
         ))}
       </Collapsible>
       <Collapsible
-        className="conditions-section"
         title="Conditions"
         count={conditionNodes.length}
         icon={ConditionsIcon}
-        color="#eff6ff"
-        iconBgColor="#3b82f6"
-        iconColor="icon-white"
+        {...sectionStyles.conditions}
       >
         {conditionNodes.map((node, index) => (
-          <Node key={index} data={node.data} icon={node.icon} />
+          <Node key={index} data={node.data} icon={node.icon} {...sectionStyles.conditions} />
         ))}
       </Collapsible>
       <Collapsible
-        className="actions-section"
         title="Actions"
         count={actionNodes.length}
         icon={ActionsIcon}
-        color="#fbf5ff"
-        iconBgColor="#9333ea"
-        iconColor="icon-white"
+        {...sectionStyles.actions}
       >
         {actionNodes.map((node, index) => (
-          <Node key={index} data={node.data} icon={node.icon} />
+          <Node key={index} data={node.data} icon={node.icon} {...sectionStyles.actions} />
         ))}
       </Collapsible>
     </aside>

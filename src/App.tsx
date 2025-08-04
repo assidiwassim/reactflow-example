@@ -1,12 +1,11 @@
 import DnDFlow from './DnD';
 import Header from './Header';
-import './App.css';
 
 function App() {
   return (
-    <div className="app-container">
+    <div className="flex flex-col h-screen bg-gray-50">
       <Header />
-      <main className="main-content">
+      <main className="flex-grow">
         <DnDFlow />
       </main>
     </div>
