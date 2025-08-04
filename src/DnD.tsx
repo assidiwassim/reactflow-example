@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { ReactFlow, ReactFlowProvider, addEdge, useNodesState, useEdgesState, Controls, Background, MiniMap, Panel } from '@xyflow/react';
 import type { Connection, Edge, Node, ReactFlowInstance } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
@@ -6,13 +6,11 @@ import '@xyflow/react/dist/style.css';
 import Sidebar from './Sidebar';
 import { CustomNode } from './CustomNode';
 
+const nodeTypes = { custom: CustomNode };
 
 const initialNodes: Node[] = [];
 
-let id = 0;
-const getId = () => `${id++}`;
-
-const nodeTypes = { custom: CustomNode };
+const getId = () => `dndnode_${+new Date()}`;
 
 const DnDFlow = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -20,6 +18,15 @@ const DnDFlow = () => {
   const initialEdges: Edge[] = [];
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
+
+  const defaultEdgeOptions = useMemo(
+    () => ({
+      type: 'smoothstep',
+      style: { strokeWidth: 2, stroke: '#9ca3af', strokeDasharray: '5 5' },
+      animated: true,
+    }),
+    []
+  );
 
   const onConnect = useCallback((params: Connection) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
@@ -36,7 +43,7 @@ const DnDFlow = () => {
         return;
       }
 
-      const nodeDataString = event.dataTransfer.getData('application/reactflow');
+      const nodeDataString = event.dataTransfer.getData('application/reactflow-data');
 
       if (!nodeDataString) {
         return;
@@ -53,11 +60,7 @@ const DnDFlow = () => {
         id: getId(),
         type: 'custom',
         position,
-        data: {
-          label: nodeData.label,
-          description: nodeData.description,
-          icon: nodeData.icon,
-        },
+        data: nodeData,
       };
 
       setNodes((nds) => nds.concat(newNode));
@@ -88,6 +91,7 @@ const DnDFlow = () => {
             onInit={setReactFlowInstance}
             onDrop={onDrop}
             onDragOver={onDragOver}
+            defaultEdgeOptions={defaultEdgeOptions}
             fitView
             attributionPosition="bottom-left"
             className="bg-gray-50"
@@ -98,11 +102,11 @@ const DnDFlow = () => {
             <Background gap={20} size={1} />
             <MiniMap
               nodeColor={(node) => {
-                switch (node.type) {
-                  case 'trigger': return '#10b981';
-                  case 'condition': return '#3b82f6';
-                  case 'action': return '#8b5cf6';
-                  default: return '#6b7280';
+                switch (node.data.type) {
+                  case 'trigger': return '#4ade80'; // green-400
+                  case 'condition': return '#60a5fa'; // blue-400
+                  case 'action': return '#c084fc'; // purple-400
+                  default: return '#9ca3af'; // gray-400
                 }
               }}
               className="!bg-white !border-gray-200"

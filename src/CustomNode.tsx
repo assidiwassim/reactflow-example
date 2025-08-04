@@ -1,37 +1,63 @@
-import { Handle, Position, useReactFlow } from '@xyflow/react';
+import { Handle, Position } from '@xyflow/react';
 import { getIcon } from './icons';
+
+const typeStyles = {
+  trigger: {
+    borderColor: 'border-green-400',
+    textColor: 'text-green-500',
+    badgeBg: 'bg-green-100',
+    badgeText: 'text-green-800',
+    handleColor: '#4ade80',
+  },
+  condition: {
+    borderColor: 'border-blue-400',
+    textColor: 'text-blue-500',
+    badgeBg: 'bg-blue-100',
+    badgeText: 'text-blue-800',
+    handleColor: '#60a5fa',
+  },
+  action: {
+    borderColor: 'border-purple-400',
+    textColor: 'text-purple-500',
+    badgeBg: 'bg-purple-100',
+    badgeText: 'text-purple-800',
+    handleColor: '#c084fc',
+  },
+};
 
 export type CustomNodeData = {
   label: string;
   description: string;
   icon: string;
+  type: 'trigger' | 'condition' | 'action';
+  status: string;
 };
 
-export function CustomNode({ id, data }: { id: string; data: CustomNodeData }) {
-  const { deleteElements } = useReactFlow();
-  const Icon = data.icon ? getIcon(data.icon) : null;
-
-  if (!Icon) {
-    return null;
-  }
+export function CustomNode({ data }: { data: CustomNodeData }) {
+  const Icon = getIcon(data.icon);
+  const styles = typeStyles[data.type] || {};
 
   return (
-    <div className="group relative flex items-center p-3 bg-white border border-gray-200 rounded-lg shadow-md min-w-[220px]">
-      <button 
-        className="absolute top-[-10px] right-[-10px] bg-white border rounded-full w-5 h-5 flex items-center justify-center text-red-500 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 hover:text-red-600"
-        onClick={() => deleteElements({ nodes: [{ id }] })}
-      >
-        ×
-      </button>
-      <Handle type="target" position={Position.Left} className="!bg-gray-400" />
-      <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-md mr-3">
-        <Icon />
+    <div className={`bg-white border-2 ${styles.borderColor} rounded-lg shadow-md w-64 hover:shadow-lg transition-shadow`}>
+      <div className="relative p-4">
+        <Handle type="target" position={Position.Left} className="!w-3 !h-3 !-ml-5" style={{ backgroundColor: styles.handleColor, border: '2px solid white' }} />
+        <div className="flex items-start">
+          {Icon && <div className="w-8 h-8 flex items-center justify-center rounded-md mr-4"><Icon /></div>}
+          <div className="flex flex-col flex-grow">
+            <div className="font-bold text-gray-800">{data.label}</div>
+            <div className={`text-xs font-semibold uppercase tracking-wider ${styles.textColor}`}>{data.type}</div>
+            <div className="text-sm text-gray-600 mt-1">{data.description}</div>
+          </div>
+        </div>
+        <Handle type="source" position={Position.Right} className="!w-3 !h-3 !-mr-5" style={{ backgroundColor: styles.handleColor, border: '2px solid white' }} />
       </div>
-      <div className="flex flex-col">
-        <span className="font-semibold text-gray-800">{data.label}</span>
-        <span className="text-sm text-gray-500">{data.description}</span>
-      </div>
-      <Handle type="source" position={Position.Right} className="!bg-gray-400" />
+      {data.status === 'Configured' && (
+        <div className="px-4 pb-4">
+          <div className={`text-xs font-medium px-3 py-1 rounded-md ${styles.badgeBg} ${styles.badgeText}`}>
+            {data.status}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

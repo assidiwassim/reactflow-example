@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { Collapsible } from './Collapsible';
 import { TriggersIcon, ConditionsIcon, ActionsIcon, StagnationIcon, NoActivityIcon, StageChangeIcon, DataChangeIcon, SendIcon, ExitIcon, SendNudgeIcon, CreateTaskIcon, SearchIcon } from './icons';
 
-const onDragStart = (event: React.DragEvent, nodeData: { label: string; description: string; icon: string }) => {
+const onDragStart = (event: React.DragEvent, nodeData: object) => {
   const data = JSON.stringify(nodeData);
-  event.dataTransfer.setData('application/reactflow', data);
+  event.dataTransfer.setData('application/reactflow-data', data);
   event.dataTransfer.effectAllowed = 'move';
 };
 
-const Node = ({ data, icon: Icon, nodeBorderColor, iconBgColor }: { data: { label: string; description: string; icon: string }; icon: React.ComponentType; nodeBorderColor: string; iconBgColor: string; }) => (
+const Node = ({ data, icon: Icon, nodeBorderColor, iconBgColor }: { data: { label: string; description: string; icon: string; type: string; status: string }; icon: React.ComponentType; nodeBorderColor: string; iconBgColor: string; }) => (
   <div
     className={`flex items-center p-3 bg-white border rounded-lg cursor-grab transition-shadow hover:shadow-md ${nodeBorderColor}`}
     onDragStart={(event) => onDragStart(event, data)}
@@ -25,21 +25,21 @@ const Node = ({ data, icon: Icon, nodeBorderColor, iconBgColor }: { data: { labe
 );
 
 const triggerNodes = [
-  { data: { label: 'Deal Stagnation', description: 'Trigger when deal is stuck in stage', icon: 'stagnation' }, icon: StagnationIcon },
-  { data: { label: 'No Activity', description: 'Trigger when no activity for X days', icon: 'no-activity' }, icon: NoActivityIcon },
-  { data: { label: 'Stage Change', description: 'Trigger on deal stage progression', icon: 'stage-change' }, icon: StageChangeIcon },
-  { data: { label: 'Data Change', description: 'Trigger on CRM data updates', icon: 'data-change' }, icon: DataChangeIcon },
+  { data: { label: 'Deal Stagnation', description: 'Trigger when deal is stuck in stage', icon: 'stagnation', type: 'trigger', status: 'Configured' }, icon: StagnationIcon },
+  { data: { label: 'No Activity', description: 'Trigger when no activity for X days', icon: 'no-activity', type: 'trigger', status: 'Configured' }, icon: NoActivityIcon },
+  { data: { label: 'Stage Change', description: 'Trigger on deal stage progression', icon: 'stage-change', type: 'trigger', status: 'Configured' }, icon: StageChangeIcon },
+  { data: { label: 'Data Change', description: 'Trigger on CRM data updates', icon: 'data-change', type: 'trigger', status: 'Configured' }, icon: DataChangeIcon },
 ];
 
 const conditionNodes = [
-  { data: { label: 'Send Email', description: 'Send an email to a contact', icon: 'send' }, icon: SendIcon },
-  { data: { label: 'Exit Workflow', description: 'End the workflow for a contact', icon: 'exit' }, icon: ExitIcon },
+  { data: { label: 'Deal Value', description: 'Check deal value thresholds', icon: 'send', type: 'condition', status: 'Configured' }, icon: SendIcon },
+  { data: { label: 'Contact Property', description: 'Check a contact property value', icon: 'exit', type: 'condition', status: 'Configured' }, icon: ExitIcon },
 ];
 
 const actionNodes = [
-  { data: { label: 'Send Nudge', description: 'Display nudge to user', icon: 'send-nudge' }, icon: SendNudgeIcon },
-  { data: { label: 'Send Email', description: 'Send automated email', icon: 'send' }, icon: SendIcon },
-  { data: { label: 'Create Task', description: 'Create follow-up task', icon: 'create-task' }, icon: CreateTaskIcon },
+  { data: { label: 'Send Nudge', description: 'Display nudge to user', icon: 'send-nudge', type: 'action', status: 'Configured' }, icon: SendNudgeIcon },
+  { data: { label: 'Send Email', description: 'Send automated email', icon: 'send', type: 'action', status: 'Configured' }, icon: SendIcon },
+  { data: { label: 'Create Task', description: 'Create follow-up task', icon: 'create-task', type: 'action', status: 'Configured' }, icon: CreateTaskIcon },
 ];
 
 const Sidebar = () => {
