@@ -50,7 +50,10 @@ body {
   display: flex;
   flex-grow: 1;
   padding: 20px;
-  gap: 20px;
+}
+
+.sidebar {
+  margin-right: 20px;
 }
 
 .sidebar {
@@ -60,81 +63,125 @@ body {
   padding: 12px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .collapsible-section {
-  margin-bottom: 12px;
+  border-radius: 12px;
+  padding: 12px;
+  transition: background-color 0.2s ease;
 }
 
-.section-header {
+.collapsible-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
-  background-color: #f3f4f6;
-  border: none;
-  padding: 12px;
-  border-radius: 8px;
   cursor: pointer;
-  text-align: left;
 }
 
-.section-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #111827;
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.section-icon-wrapper {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
+.header-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.section-icon-wrapper.trigger {
-    background-color: #d1fae5;
+.header-icon svg {
+  width: 24px;
+  height: 24px;
 }
 
-.section-icon-wrapper.trigger svg path {
-    stroke: #10b981;
+.icon-white path {
+  stroke: #fff;
 }
 
-.section-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: #6b7280;
+.header-title h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
 }
 
-.chevron {
-  transition: transform 0.2s;
+.header-title p {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
 }
 
-.chevron.open {
+.chevron-wrapper {
+  transition: transform 0.3s ease;
+}
+
+.chevron-wrapper.open {
   transform: rotate(180deg);
 }
 
-.section-content {
-  padding: 12px 0 0;
+.collapsible-content {
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .draggable-node {
   display: flex;
   align-items: center;
   padding: 12px;
-  margin-bottom: 8px;
   background-color: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   cursor: grab;
   transition: box-shadow 0.2s;
+}
+
+.collapsible-content > .draggable-node:last-child {
+  margin-bottom: 0;
+}
+
+.triggers-section {
+  border: 1px solid #bbf7d0;
+}
+
+.conditions-section {
+  border: 1px solid #bfdbfe;
+}
+
+.triggers-section .draggable-node {
+  border-color: #dcfce7;
+}
+
+.conditions-section .draggable-node {
+  border-color: #dbeafe;
+}
+
+.triggers-section .node-icon-wrapper {
+  background-color: #f0fdf4;
+}
+
+.conditions-section .node-icon-wrapper {
+  background-color: #eff6ff;
+}
+
+.actions-section {
+  border: 1px solid #e9d5ff;
+}
+
+.actions-section .draggable-node {
+  border-color: #f3e8ff;
+}
+
+.actions-section .node-icon-wrapper {
+  background-color: #fbf5ff;
 }
 
 .draggable-node:hover {
@@ -208,6 +255,7 @@ body {
 }
 
 .custom-node {
+  position: relative;
   display: flex;
   align-items: center;
   padding: 12px;
@@ -216,5 +264,33 @@ body {
   border-radius: 8px;
   min-width: 220px;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.custom-node .delete-btn {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  color: #ef4444;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.custom-node:hover .delete-btn {
+  opacity: 1;
+}
+
+.delete-btn:hover {
+  background: #fef2f2;
+  color: #dc2626;
 }
 

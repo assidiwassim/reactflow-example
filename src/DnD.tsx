@@ -73,6 +73,7 @@ const DnDFlow = () => {
       <ReactFlowProvider>
         <div className="reactflow-wrapper" ref={reactFlowWrapper}>
             <h2 className="canvas-title">Workflow Canvas</h2>
+            <Controls showInteractive={false} showFitView={false} />
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -85,7 +86,6 @@ const DnDFlow = () => {
                 fitView
                 nodeTypes={nodeTypes}
             >
-                <Controls />
                 {nodes.length === 0 && (
                     <div className="placeholder">Drag components here</div>
                 )}

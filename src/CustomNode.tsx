@@ -1,4 +1,4 @@
-import { Handle, Position } from '@xyflow/react';
+import { Handle, Position, useReactFlow } from '@xyflow/react';
 import { getIcon } from './icons';
 
 export type CustomNodeData = {
@@ -7,7 +7,10 @@ export type CustomNodeData = {
   icon: string;
 };
 
-export function CustomNode({ data }: { data: CustomNodeData }) {
+
+
+export function CustomNode({ id, data }: { id: string; data: CustomNodeData }) {
+  const { deleteElements } = useReactFlow();
   const Icon = data.icon ? getIcon(data.icon) : null;
 
   if (!Icon) {
@@ -16,6 +19,7 @@ export function CustomNode({ data }: { data: CustomNodeData }) {
 
   return (
     <div className="custom-node">
+      <button className="delete-btn" onClick={() => deleteElements({ nodes: [{ id }] })}>×</button>
       <Handle type="target" position={Position.Left} />
       <div className="node-icon-wrapper">
         <Icon />
