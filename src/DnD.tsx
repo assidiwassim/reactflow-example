@@ -70,8 +70,13 @@ const DnDFlow = () => {
       <Sidebar />
       <ReactFlowProvider>
         <div className="flex-grow bg-white rounded-lg border p-5 relative" ref={reactFlowWrapper}>
-          <h2 className="text-lg font-semibold text-gray-800 mb-5">Workflow Canvas</h2>
-          <hr className="my-5" />
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-semibold text-gray-800">Workflow Canvas</h2>
+            <span className="bg-gray-100 text-gray-800 text-xs font-medium px-3 py-1 rounded-full">
+              {nodes.length} {nodes.length === 1 ? 'node' : 'nodes'}
+            </span>
+          </div>
+          <hr className="my-4" />
           <Controls />
           <div className="p-0 h-[540px]">
           <ReactFlow

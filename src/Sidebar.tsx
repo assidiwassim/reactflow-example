@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Collapsible } from './Collapsible';
-import { TriggersIcon, ConditionsIcon, ActionsIcon, StagnationIcon, NoActivityIcon, StageChangeIcon, DataChangeIcon, SendIcon, ExitIcon, SendNudgeIcon, CreateTaskIcon } from './icons';
+import { TriggersIcon, ConditionsIcon, ActionsIcon, StagnationIcon, NoActivityIcon, StageChangeIcon, DataChangeIcon, SendIcon, ExitIcon, SendNudgeIcon, CreateTaskIcon, SearchIcon } from './icons';
 
 const onDragStart = (event: React.DragEvent, nodeData: { label: string; description: string; icon: string }) => {
   const data = JSON.stringify(nodeData);
@@ -43,6 +43,23 @@ const actionNodes = [
 ];
 
 const Sidebar = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filterNodes = (nodes: any[]) => {
+    if (!searchTerm.trim()) {
+      return nodes;
+    }
+    return nodes.filter(
+      (node) =>
+        node.data.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        node.data.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
+
+  const filteredTriggerNodes = filterNodes(triggerNodes);
+  const filteredConditionNodes = filterNodes(conditionNodes);
+  const filteredActionNodes = filterNodes(actionNodes);
+
   const sectionStyles = {
     triggers: {
       nodeBorderColor: 'border-green-200',
@@ -69,33 +86,45 @@ const Sidebar = () => {
 
   return (
     <aside className="w-80 bg-white rounded-xl p-3 overflow-y-auto flex flex-col gap-4">
+      <div className="relative">
+        <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+          <SearchIcon />
+        </span>
+        <input
+          type="text"
+          placeholder="Search nodes..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
       <Collapsible
         title="Triggers"
-        count={triggerNodes.length}
+        count={filteredTriggerNodes.length}
         icon={TriggersIcon}
         {...sectionStyles.triggers}
       >
-        {triggerNodes.map((node, index) => (
+        {filteredTriggerNodes.map((node, index) => (
           <Node key={index} data={node.data} icon={node.icon} {...sectionStyles.triggers} />
         ))}
       </Collapsible>
       <Collapsible
         title="Conditions"
-        count={conditionNodes.length}
+        count={filteredConditionNodes.length}
         icon={ConditionsIcon}
         {...sectionStyles.conditions}
       >
-        {conditionNodes.map((node, index) => (
+        {filteredConditionNodes.map((node, index) => (
           <Node key={index} data={node.data} icon={node.icon} {...sectionStyles.conditions} />
         ))}
       </Collapsible>
       <Collapsible
         title="Actions"
-        count={actionNodes.length}
+        count={filteredActionNodes.length}
         icon={ActionsIcon}
         {...sectionStyles.actions}
       >
-        {actionNodes.map((node, index) => (
+        {filteredActionNodes.map((node, index) => (
           <Node key={index} data={node.data} icon={node.icon} {...sectionStyles.actions} />
         ))}
       </Collapsible>
