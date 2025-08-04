@@ -5,6 +5,7 @@ import '@xyflow/react/dist/style.css';
 
 import Sidebar from './Sidebar';
 import { CustomNode } from './CustomNode';
+import { ConfigurationModal } from './ConfigurationModal';
 
 const nodeTypes = { custom: CustomNode };
 
@@ -18,6 +19,8 @@ const DnDFlow = () => {
   const initialEdges: Edge[] = [];
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
+  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const defaultEdgeOptions = useMemo(
     () => ({
@@ -68,6 +71,38 @@ const DnDFlow = () => {
     [reactFlowInstance, setNodes]
   );
 
+  const onNodeDoubleClick = useCallback((_: React.MouseEvent, node: Node) => {
+    setSelectedNode(node);
+    setIsModalOpen(true);
+  }, []);
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedNode(null);
+  };
+
+  const handleModalSave = (newLabel: string) => {
+    if (!selectedNode) return;
+
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === selectedNode.id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              label: newLabel,
+              status: 'Configured',
+            },
+          };
+        }
+        return node;
+      })
+    );
+
+    handleModalClose();
+  };
+
   return (
     <div className="flex flex-grow p-5 gap-5 h-full overflow-hidden">
       <Sidebar />
@@ -82,45 +117,55 @@ const DnDFlow = () => {
           <hr className="my-4" />
           <Controls />
           <div className="p-0 h-[540px]">
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onInit={setReactFlowInstance}
-            onDrop={onDrop}
-            onDragOver={onDragOver}
-            defaultEdgeOptions={defaultEdgeOptions}
-            fitView
-            attributionPosition="bottom-left"
-            className="bg-gray-50"
-            minZoom={0.5} 
-            maxZoom={1.5}
-            nodeTypes={nodeTypes}
-          >
-            <Background gap={20} size={1} />
-            <MiniMap
-              nodeColor={(node) => {
-                switch (node.data.type) {
-                  case 'trigger': return '#4ade80'; // green-400
-                  case 'condition': return '#60a5fa'; // blue-400
-                  case 'action': return '#c084fc'; // purple-400
-                  default: return '#9ca3af'; // gray-400
-                }
-              }}
-              className="!bg-white !border-gray-200"
-            />
-            <Panel position="top-left">
-              <div className="bg-white p-2 rounded-lg shadow-sm border text-xs text-gray-600">
-                Drag nodes from the left panel to build your workflow
-              </div>
-            </Panel>
-           
-          </ReactFlow>
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onInit={setReactFlowInstance}
+              onDrop={onDrop}
+              onDragOver={onDragOver}
+              onNodeDoubleClick={onNodeDoubleClick}
+              defaultEdgeOptions={defaultEdgeOptions}
+              fitView
+              attributionPosition="bottom-left"
+              className="bg-gray-50"
+              minZoom={0.5}
+              maxZoom={1.5}
+              nodeTypes={nodeTypes}
+            >
+              <Background gap={20} size={1} />
+              <MiniMap
+                nodeColor={(node) => {
+                  switch (node.data.type) {
+                    case 'trigger':
+                      return '#4ade80'; // green-400
+                    case 'condition':
+                      return '#60a5fa'; // blue-400
+                    case 'action':
+                      return '#c084fc'; // purple-400
+                    default:
+                      return '#9ca3af'; // gray-400
+                  }
+                }}
+                className="!bg-white !border-gray-200"
+              />
+              <Panel position="top-left">
+                <div className="bg-white p-2 rounded-lg shadow-sm border text-xs text-gray-600">
+                  Drag nodes from the left panel to build your workflow
+                </div>
+              </Panel>
+            </ReactFlow>
           </div>
         </div>
       </ReactFlowProvider>
+      <ConfigurationModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onSave={handleModalSave}
+        node={selectedNode}
+      />
     </div>
   );
 };

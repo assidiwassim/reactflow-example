@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import type { Node } from '@xyflow/react';
 
 type ConfigurationModalProps = {
@@ -13,7 +13,7 @@ export const ConfigurationModal = ({ isOpen, onClose, onSave, node }: Configurat
 
   useEffect(() => {
     if (node) {
-      setLabel(node.data.label);
+      setLabel(String(node.data.label || ''));
     }
   }, [node]);
 
