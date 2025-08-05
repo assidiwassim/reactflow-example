@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { SaveIcon, PlayIcon, BackIcon, LoaderIcon, CheckIcon, EditIcon, PublishIcon } from './FlowEditorIcons';
+import TestFlowModal from './TestFlowModal';
+import { SaveIcon, PlayIcon, LoaderIcon, CheckIcon, EditIcon, PublishIcon } from './FlowEditorIcons';
 import { type Workflow } from '../types';
 
 interface FlowEditorHeaderProps {
@@ -14,6 +15,7 @@ interface FlowEditorHeaderProps {
 }
 
 const FlowEditorHeader: React.FC<FlowEditorHeaderProps> = ({ onBack, workflow, onWorkflowNameChange, onSave, saveStatus, onPublish, publishStatus, hasUnsavedChanges }) => {
+  const [isTestModalOpen, setIsTestModalOpen] = useState(false);
   const isPublished = workflow?.status === 'Published';
   const isPublishing = publishStatus === 'publishing';
   const isPublishSuccess = publishStatus === 'success';
@@ -131,12 +133,13 @@ const FlowEditorHeader: React.FC<FlowEditorHeaderProps> = ({ onBack, workflow, o
               </div>
             )}
           </div>
-          <button className="flex items-center px-4 py-2 text-sm font-medium text-white bg-green-500 border border-transparent rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+          <button onClick={() => setIsTestModalOpen(true)} className="flex items-center px-4 py-2 text-sm font-medium text-white bg-green-500 border border-transparent rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
             <PlayIcon />
             Test Workflow
           </button>
         </div>
       </div>
+      <TestFlowModal isOpen={isTestModalOpen} onClose={() => setIsTestModalOpen(false)} />
     </header>
   );
 };

@@ -3,7 +3,7 @@ import React from 'react';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm?: () => void;
   title: string;
   children: React.ReactNode;
   confirmText?: string;
@@ -25,12 +25,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onConfirm, title, childr
           >
             {cancelText}
           </button>
-          <button 
-            onClick={onConfirm} 
-            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-          >
-            {confirmText}
-          </button>
+          {onConfirm && (
+            <button 
+              onClick={onConfirm} 
+              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+            >
+              {confirmText}
+            </button>
+          )}
         </div>
       </div>
     </div>
