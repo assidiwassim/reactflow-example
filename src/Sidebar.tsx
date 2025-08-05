@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Collapsible } from './Collapsible';
 import { TriggersIcon, ConditionsIcon, ActionsIcon, StagnationIcon, NoActivityIcon, StageChangeIcon, DataChangeIcon, SendIcon, ExitIcon, SendNudgeIcon, CreateTaskIcon, SearchIcon } from './icons';
+import { NodeCategory } from './types';
 
 const onDragStart = (event: React.DragEvent, nodeData: object) => {
   const data = JSON.stringify(nodeData);
@@ -25,21 +26,21 @@ const SidebarNode = ({ data, icon: Icon, nodeBorderColor, iconBgColor }: { data:
 );
 
 const triggerNodes = [
-  { data: { type: 'Deal Stagnation', name: 'Deal Stagnation', description: 'Trigger when deal is stuck in stage', icon: 'stagnation', category: 'trigger', status: 'Configured' }, icon: StagnationIcon },
-  { data: { type: 'No Activity', name: 'No Activity', description: 'Trigger when no activity for X days', icon: 'no-activity', category: 'trigger', status: 'Configured' }, icon: NoActivityIcon },
-  { data: { type: 'Stage Change', name: 'Stage Change', description: 'Trigger on deal stage progression', icon: 'stage-change', category: 'trigger', status: 'Configured' }, icon: StageChangeIcon },
-  { data: { type: 'Data Change', name: 'Data Change', description: 'Trigger on CRM data updates', icon: 'data-change', category: 'trigger', status: 'Configured' }, icon: DataChangeIcon },
+  { data: { type: 'Deal Stagnation', name: 'Deal Stagnation', description: 'Trigger when deal is stuck in stage', icon: 'stagnation', category: NodeCategory.Trigger, status: 'Configured' }, icon: StagnationIcon },
+  { data: { type: 'No Activity', name: 'No Activity', description: 'Trigger when no activity for X days', icon: 'no-activity', category: NodeCategory.Trigger, status: 'Configured' }, icon: NoActivityIcon },
+  { data: { type: 'Stage Change', name: 'Stage Change', description: 'Trigger on deal stage progression', icon: 'stage-change', category: NodeCategory.Trigger, status: 'Configured' }, icon: StageChangeIcon },
+  { data: { type: 'Data Change', name: 'Data Change', description: 'Trigger on CRM data updates', icon: 'data-change', category: NodeCategory.Trigger, status: 'Configured' }, icon: DataChangeIcon },
 ];
 
 const conditionNodes = [
-  { data: { type: 'Deal Value', name: 'Deal Value', description: 'Check deal value thresholds', icon: 'send', category: 'condition', status: 'Configured' }, icon: SendIcon },
-  { data: { type: 'Contact Property', name: 'Contact Property', description: 'Check a contact property value', icon: 'exit', category: 'condition', status: 'Configured' }, icon: ExitIcon },
+  { data: { type: 'Deal Value', name: 'Deal Value', description: 'Check deal value thresholds', icon: 'send', category: NodeCategory.Condition, status: 'Configured' }, icon: SendIcon },
+  { data: { type: 'Contact Property', name: 'Contact Property', description: 'Check a contact property value', icon: 'exit', category: NodeCategory.Condition, status: 'Configured' }, icon: ExitIcon },
 ];
 
 const actionNodes = [
-  { data: { type: 'Send Nudge', name: 'Send Nudge', description: 'Display nudge to user', icon: 'send-nudge', category: 'action', status: 'Configured' }, icon: SendNudgeIcon },
-  { data: { type: 'Send Email', name: 'Send Email', description: 'Send automated email', icon: 'send', category: 'action', status: 'Configured' }, icon: SendIcon },
-  { data: { type: 'Create Task', name: 'Create Task', description: 'Create follow-up task', icon: 'create-task', category: 'action', status: 'Configured' }, icon: CreateTaskIcon },
+  { data: { type: 'Send Nudge', name: 'Send Nudge', description: 'Display nudge to user', icon: 'send-nudge', category: NodeCategory.Action, status: 'Configured' }, icon: SendNudgeIcon },
+  { data: { type: 'Send Email', name: 'Send Email', description: 'Send automated email', icon: 'send', category: NodeCategory.Action, status: 'Configured' }, icon: SendIcon },
+  { data: { type: 'Create Task', name: 'Create Task', description: 'Create follow-up task', icon: 'create-task', category: NodeCategory.Action, status: 'Configured' }, icon: CreateTaskIcon },
 ];
 
 const Sidebar = () => {

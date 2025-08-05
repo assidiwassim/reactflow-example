@@ -1,39 +1,31 @@
 import { Handle, Position } from '@xyflow/react';
 import { getIcon } from './icons';
 import { CogIcon } from './CogIcon';
+import { NodeCategory } from './types';
+import type { CustomNodeData } from './types';
 
 const typeStyles = {
-  trigger: {
+  [NodeCategory.Trigger]: {
     borderColor: 'border-green-400',
     textColor: 'text-green-500',
     badgeBg: 'bg-green-100',
     badgeText: 'text-green-800',
     handleColor: '#4ade80',
   },
-  condition: {
+  [NodeCategory.Condition]: {
     borderColor: 'border-blue-400',
     textColor: 'text-blue-500',
     badgeBg: 'bg-blue-100',
     badgeText: 'text-blue-800',
     handleColor: '#60a5fa',
   },
-  action: {
+  [NodeCategory.Action]: {
     borderColor: 'border-purple-400',
     textColor: 'text-purple-500',
     badgeBg: 'bg-purple-100',
     badgeText: 'text-purple-800',
     handleColor: '#c084fc',
   },
-};
-
-export type CustomNodeData = {
-  name: string;
-  type: string;
-  description: string;
-  category: 'trigger' | 'condition' | 'action';
-  icon: string;
-  isConfigured: boolean;
-  config?: { [key: string]: any };
 };
 
 export function CustomNode({ data }: { data: CustomNodeData }) {
@@ -48,7 +40,7 @@ export function CustomNode({ data }: { data: CustomNodeData }) {
         </button>
       </div>
       <div className="relative p-4">
-              {data.category !== 'trigger' && (
+              {data.category !== NodeCategory.Trigger && (
         <Handle type="target" position={Position.Left} className="!w-3 !h-3 !absolute !-left-1.5 !top-1/2 !-translate-y-1/2" style={{ backgroundColor: styles.handleColor, border: '2px solid white' }} />
       )}
         <div className="flex items-start">

@@ -5,6 +5,7 @@ import '@xyflow/react/dist/style.css';
 
 import Sidebar from './Sidebar';
 import { CustomNode } from './CustomNode';
+import { NodeCategory } from './types';
 import { ConfigurationModal } from './ConfigurationModal';
 
 const nodeTypes = { custom: CustomNode };
@@ -35,7 +36,7 @@ const DnDFlow = () => {
     (params: Connection) => {
       const targetNode = nodes.find((node) => node.id === params.target);
 
-      if (targetNode?.data?.category === 'trigger') {
+      if (targetNode?.data?.category === NodeCategory.Trigger) {
         return;
       }
 
@@ -163,11 +164,11 @@ const DnDFlow = () => {
               <MiniMap
                 nodeColor={(node) => {
                   switch (node.data.category) {
-                    case 'trigger':
+                    case NodeCategory.Trigger:
                       return '#4ade80'; // green-400
-                    case 'condition':
+                    case NodeCategory.Condition:
                       return '#60a5fa'; // blue-400
-                    case 'action':
+                    case NodeCategory.Action:
                       return '#c084fc'; // purple-400
                     default:
                       return '#9ca3af'; // gray-400
