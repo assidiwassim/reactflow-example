@@ -1,13 +1,9 @@
-import FlowEditor from './FlowEditor';
-import FlowEditorHeader from './FlowEditorHeader';
+import WorkflowBuilder from './WorkflowBuilder';
 
 function App() {
   return (
-    <div className="flex flex-col h-screen ">
-      <FlowEditorHeader />
-      <main className="flex-grow overflow-hidden">
-        <FlowEditor />
-      </main>
+    <div className="h-screen">
+      <WorkflowBuilder />
     </div>
   );
 }

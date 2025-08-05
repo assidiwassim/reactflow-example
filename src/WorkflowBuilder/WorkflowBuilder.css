@@ -1,0 +1,22 @@
+.workflow-builder .custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.workflow-builder .custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.workflow-builder .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 10px;
+  border: 2px solid #ffffff;
+}
+
+.workflow-builder .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+.workflow-builder .custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db #ffffff;
+}
