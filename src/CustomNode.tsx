@@ -1,6 +1,5 @@
 import { Handle, Position } from '@xyflow/react';
-import { getIcon } from './icons';
-import { CogIcon } from './CogIcon';
+import { getIcon, CogIcon } from './FlowEditorIcons';
 import { NodeCategory } from './types';
 import type { CustomNodeData } from './types';
 

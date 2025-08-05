@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Collapsible } from './Collapsible';
-import { TriggersIcon, ConditionsIcon, ActionsIcon, StagnationIcon, NoActivityIcon, StageChangeIcon, DataChangeIcon, SendIcon, ExitIcon, SendNudgeIcon, CreateTaskIcon, SearchIcon } from './icons';
+import { TriggersIcon, ConditionsIcon, ActionsIcon, StagnationIcon, NoActivityIcon, StageChangeIcon, DataChangeIcon, SendIcon, ExitIcon, SendNudgeIcon, CreateTaskIcon, SearchIcon } from './FlowEditorIcons';
 import { NodeCategory } from './types';
 
 const onDragStart = (event: React.DragEvent, nodeData: object) => {

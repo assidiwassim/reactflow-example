@@ -1,4 +1,4 @@
-import { SaveIcon, PlayIcon } from './icons';
+import { SaveIcon, PlayIcon } from './FlowEditorIcons';
 
 const FlowEditorHeader = () => {
   return (
