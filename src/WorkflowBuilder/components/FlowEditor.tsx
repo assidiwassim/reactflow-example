@@ -1,46 +1,62 @@
-import React, { useState, useRef, useCallback, useMemo } from 'react';
-import { ReactFlow, ReactFlowProvider, addEdge, useNodesState, useEdgesState, Controls, Background, MiniMap, Panel } from '@xyflow/react';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { ReactFlow, ReactFlowProvider, addEdge, useNodesState, useEdgesState, Controls, Background, MiniMap } from '@xyflow/react';
 import type { Connection, Edge, Node, ReactFlowInstance } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import FlowEditorSidebar from './FlowEditorSidebar';
 import { CustomNode } from './CustomNode';
 import { NodeCategory } from './FlowEditorIconsTypes';
 import { NodeConfigurationModal } from './NodeConfigurationModal';
+import { type Workflow } from '../types';
 
 const nodeTypes = { custom: CustomNode };
 
-const initialNodes: Node[] = [];
+const minimapNodeColor = (node: Node) => {
+  switch (node.data.category) {
+    case NodeCategory.Trigger:
+      return '#A7F3D0';
+    case NodeCategory.Condition:
+      return '#BFDBFE';
+    case NodeCategory.Action:
+      return '#DDD6FE';
+    default:
+      return '#E5E7EB';
+  }
+};
 
-const FlowEditor = () => {
+interface FlowEditorProps {
+  workflow: Workflow | null;
+}
 
+const FlowEditor: React.FC<FlowEditorProps> = ({ workflow }) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const initialEdges: Edge[] = [];
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState(workflow?.nodes || []);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(workflow?.edges || []);
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const defaultEdgeOptions = useMemo(
-    () => ({
-      type: 'default',
-      style: { strokeWidth: 2.5, stroke: '#9ca3af', strokeDasharray: '5 5' },
-      animated: true,
-    }),
-    []
-  );
+  useEffect(() => {
+    if (workflow) {
+      setNodes(workflow.nodes || []);
+      setEdges(workflow.edges || []);
+    } else {
+      setNodes([]);
+      setEdges([]);
+    }
+  }, [workflow, setNodes, setEdges]);
 
   const onConnect = useCallback(
-    (params: Connection) => {
-      const targetNode = nodes.find((node) => node.id === params.target);
-
-      if (targetNode?.data?.category === NodeCategory.Trigger) {
+    (params: Connection | Edge) => {
+      if (!reactFlowInstance) return;
+      const { target } = params;
+      const targetNode = reactFlowInstance.getNode(target as string);
+      if (targetNode?.data.category === NodeCategory.Trigger) {
+        console.warn('Triggers cannot have incoming connections.');
         return;
       }
-
       setEdges((eds) => addEdge(params, eds));
     },
-    [nodes, setEdges]
+    [reactFlowInstance, setEdges]
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -51,29 +67,25 @@ const FlowEditor = () => {
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
+      if (!reactFlowWrapper.current || !reactFlowInstance) return;
 
-      if (!reactFlowInstance) {
-        return;
-      }
-
-      const nodeDataString = event.dataTransfer.getData('application/reactflow-data');
-
-      if (!nodeDataString) {
-        return;
-      }
-
-      const nodeData = JSON.parse(nodeDataString);
+      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+      const data = JSON.parse(event.dataTransfer.getData('application/reactflow-data'));
 
       const position = reactFlowInstance.screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
+        x: event.clientX - reactFlowBounds.left,
+        y: event.clientY - reactFlowBounds.top,
       });
 
       const newNode: Node = {
-        id: `${+new Date()}`,
-        position,
+        id: `${data.type}-${+new Date()}`,
         type: 'custom',
-        data: { ...nodeData, isConfigured: false, config: {} },
+        position,
+        data: {
+          ...data,
+          name: data.type,
+          isConfigured: false,
+        },
       };
 
       setNodes((nds) => nds.concat(newNode));
@@ -81,115 +93,90 @@ const FlowEditor = () => {
     [reactFlowInstance, setNodes]
   );
 
-  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    const target = event.target as HTMLElement;
-    const action = target.closest('[data-action]')?.getAttribute('data-action');
-
-    if (action === 'configure') {
-      setSelectedNode(node);
-      setIsModalOpen(true);
-    }
-  }, []);
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-    setSelectedNode(null);
+  const onNodeClick = (_: React.MouseEvent, node: Node) => {
+    setSelectedNode(node);
   };
 
-  const handleModalSave = (newName: string) => {
-    if (!selectedNode) return;
+  const onNodeDoubleClick = (_: React.MouseEvent, node: Node) => {
+    setSelectedNode(node);
+    setIsModalOpen(true);
+  };
 
+    const handleNodeSave = (newName: string) => {
+    if (!selectedNode) return;
     setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === selectedNode.id) {
+      nds.map((n) => {
+        if (n.id === selectedNode.id) {
           return {
-            ...node,
+            ...n,
             data: {
-              ...node.data,
+              ...n.data,
               name: newName,
               isConfigured: true,
-              config: { ...(node.data.config || {}), name: newName },
             },
           };
         }
-        return node;
+        return n;
       })
     );
-
-    handleModalClose();
+    setSelectedNode(null);
+    setIsModalOpen(false);
   };
 
-  const handleDeleteNode = () => {
+  const handleNodeDelete = () => {
     if (!selectedNode) return;
-
-    setNodes((nds) => nds.filter((node) => node.id !== selectedNode.id));
-    handleModalClose();
+    setNodes((nds) => nds.filter((n) => n.id !== selectedNode.id));
+    setSelectedNode(null);
+    setIsModalOpen(false);
   };
+
+  useEffect(() => {
+    const handleNodeConfig = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      const action = target.closest('[data-action="configure"]');
+      if (action && selectedNode) {
+        setIsModalOpen(true);
+      }
+    };
+    document.addEventListener('click', handleNodeConfig);
+    return () => document.removeEventListener('click', handleNodeConfig);
+  }, [selectedNode]);
 
   return (
     <div className="flex flex-grow p-5 gap-5 h-full overflow-hidden">
       <FlowEditorSidebar />
       <ReactFlowProvider>
         <div className="flex-grow bg-white rounded-lg border p-5 relative" ref={reactFlowWrapper}>
-          <div className="flex justify-between items-center">
-            <h2 className="text-lg font-semibold text-gray-800">Workflow Canvas</h2>
-            <span className="bg-gray-100 text-gray-800 text-xs font-medium px-3 py-1 rounded-full">
-              {nodes.length} {nodes.length === 1 ? 'node' : 'nodes'}
-            </span>
-          </div>
-          <hr className="my-4" />
-          <Controls />
-          <div className="p-0 h-[540px]">
-            <ReactFlow
-              nodes={nodes}
-              edges={edges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onConnect={onConnect}
-              onInit={setReactFlowInstance}
-              onDrop={onDrop}
-              onDragOver={onDragOver}
-              onNodeClick={onNodeClick}
-              defaultEdgeOptions={defaultEdgeOptions}
-              fitView
-              attributionPosition="bottom-left"
-              className="bg-gray-50"
-              minZoom={0.5}
-              maxZoom={1.5}
-              nodeTypes={nodeTypes}
-            >
-              <Background gap={20} size={1} />
-              <MiniMap
-                nodeColor={(node) => {
-                  switch (node.data.category) {
-                    case NodeCategory.Trigger:
-                      return '#4ade80'; // green-400
-                    case NodeCategory.Condition:
-                      return '#60a5fa'; // blue-400
-                    case NodeCategory.Action:
-                      return '#c084fc'; // purple-400
-                    default:
-                      return '#9ca3af'; // gray-400
-                  }
-                }}
-                className="!bg-white !border-gray-200"
-              />
-              <Panel position="top-left">
-                <div className="bg-white p-2 rounded-lg shadow-sm border text-xs text-gray-600">
-                  Drag nodes from the left panel to build your workflow
-                </div>
-              </Panel>
-            </ReactFlow>
-          </div>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onInit={setReactFlowInstance}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            onNodeClick={onNodeClick}
+            onNodeDoubleClick={onNodeDoubleClick}
+            nodeTypes={nodeTypes}
+            fitView
+            className="bg-gray-50"
+          >
+            <Controls />
+            <MiniMap nodeColor={minimapNodeColor} nodeStrokeWidth={3} zoomable pannable />
+            <Background color="#aaa" gap={16} />
+          </ReactFlow>
         </div>
       </ReactFlowProvider>
-      <NodeConfigurationModal
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        onSave={handleModalSave}
-        onDelete={handleDeleteNode}
-        node={selectedNode}
-      />
+      {isModalOpen && selectedNode && (
+                <NodeConfigurationModal
+          isOpen={isModalOpen}
+          node={selectedNode}
+          onClose={() => setIsModalOpen(false)}
+          onSave={handleNodeSave}
+          onDelete={handleNodeDelete}
+        />
+      )}
     </div>
   );
 };
