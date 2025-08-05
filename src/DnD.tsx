@@ -109,6 +109,13 @@ const DnDFlow = () => {
     handleModalClose();
   };
 
+  const handleDeleteNode = () => {
+    if (!selectedNode) return;
+
+    setNodes((nds) => nds.filter((node) => node.id !== selectedNode.id));
+    handleModalClose();
+  };
+
   return (
     <div className="flex flex-grow p-5 gap-5 h-full overflow-hidden">
       <Sidebar />
@@ -170,6 +177,7 @@ const DnDFlow = () => {
         isOpen={isModalOpen}
         onClose={handleModalClose}
         onSave={handleModalSave}
+        onDelete={handleDeleteNode}
         node={selectedNode}
       />
     </div>

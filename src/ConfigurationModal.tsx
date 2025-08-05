@@ -5,10 +5,11 @@ type ConfigurationModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSave: (newLabel: string) => void;
+  onDelete: () => void;
   node: Node | null;
 };
 
-export const ConfigurationModal = ({ isOpen, onClose, onSave, node }: ConfigurationModalProps) => {
+export const ConfigurationModal = ({ isOpen, onClose, onSave, onDelete, node }: ConfigurationModalProps) => {
   const [label, setLabel] = useState('');
 
   useEffect(() => {
@@ -40,9 +41,21 @@ export const ConfigurationModal = ({ isOpen, onClose, onSave, node }: Configurat
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
-        <div className="flex justify-end space-x-2">
-          <button onClick={onClose} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
-          <button onClick={handleSave} className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Save</button>
+        <div className="flex justify-between items-center">
+          <button 
+            onClick={() => {
+              if (window.confirm('Are you sure you want to delete this node?')) {
+                onDelete();
+              }
+            }}
+            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+          >
+            Delete Node
+          </button>
+          <div className="space-x-2">
+            <button onClick={onClose} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
+            <button onClick={handleSave} className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Save</button>
+          </div>
         </div>
       </div>
     </div>
