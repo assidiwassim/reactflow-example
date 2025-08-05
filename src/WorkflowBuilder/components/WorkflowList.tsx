@@ -44,7 +44,7 @@ const WorkflowList: React.FC<WorkflowListProps> = ({
                 </div>
                 <div className="flex items-center gap-3">
                   <span
-                    className={`px-3 py-1 text-xs font-bold leading-5 rounded-full ${  
+                    className={`px-3 py-1 text-xs font-bold border  leading-5 rounded-full ${  
                       workflow.status === 'Published'
                         ? 'bg-green-100 text-green-800'
                         : 'bg-yellow-100 text-yellow-800'
@@ -59,8 +59,8 @@ const WorkflowList: React.FC<WorkflowListProps> = ({
                     <EditIcon />
                   </button>
                   <button 
-                    onClick={() => onDeleteWorkflow(workflow.id)}
-                    className="text-sm font-medium text-red-600 hover:text-red-800"
+                    onClick={(e) => { e.stopPropagation(); onDeleteWorkflow(workflow.id); }} 
+                    className="text-red-400 hover:text-red-500"
                   >
                     <DeleteIcon />
                   </button>

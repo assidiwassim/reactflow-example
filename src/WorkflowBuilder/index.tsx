@@ -41,6 +41,8 @@ const WorkflowBuilder = () => {
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [workflowToDeleteId, setWorkflowToDeleteId] = useState<string | null>(null);
 
   const handleCreateWorkflow = () => {
     const newWorkflow: Workflow = {
@@ -63,7 +65,16 @@ const WorkflowBuilder = () => {
   };
 
   const handleDeleteWorkflow = (workflowId: string) => {
-    setWorkflows(workflows.filter((w) => w.id !== workflowId));
+    setWorkflowToDeleteId(workflowId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDeleteWorkflow = () => {
+    if (workflowToDeleteId) {
+      setWorkflows(workflows.filter(w => w.id !== workflowToDeleteId));
+      setWorkflowToDeleteId(null);
+    }
+    setIsDeleteModalOpen(false);
   };
 
   const handleWorkflowNameChange = (newName: string) => {
@@ -200,6 +211,16 @@ const WorkflowBuilder = () => {
         cancelText="Cancel"
       >
         You have unsaved changes. Are you sure you want to discard them and go back to the list?
+      </Modal>
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDeleteWorkflow}
+        title="Delete Workflow?"
+        confirmText="Delete"
+        cancelText="Cancel"
+      >
+        Are you sure you want to delete this workflow? This action cannot be undone.
       </Modal>
     </div>
   );
