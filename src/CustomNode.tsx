@@ -1,7 +1,7 @@
 import { Handle, Position } from '@xyflow/react';
 import { getIcon, CogIcon } from './FlowEditorIcons';
-import { NodeCategory } from './types';
-import type { CustomNodeData } from './types';
+import { NodeCategory } from './FlowEditorIconsTypes';
+import type { CustomNodeData } from './FlowEditorIconsTypes';
 
 const typeStyles = {
   [NodeCategory.Trigger]: {

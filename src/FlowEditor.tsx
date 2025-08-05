@@ -4,7 +4,7 @@ import type { Connection, Edge, Node, ReactFlowInstance } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import FlowEditorSidebar from './FlowEditorSidebar';
 import { CustomNode } from './CustomNode';
-import { NodeCategory } from './types';
+import { NodeCategory } from './FlowEditorIconsTypes';
 import { NodeConfigurationModal } from './NodeConfigurationModal';
 
 const nodeTypes = { custom: CustomNode };

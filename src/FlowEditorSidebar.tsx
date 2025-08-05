@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FlowEditorCollapsible } from './FlowEditorCollapsible';
 import { TriggersIcon, ConditionsIcon, ActionsIcon, StagnationIcon, NoActivityIcon, StageChangeIcon, DataChangeIcon, SendIcon, ExitIcon, SendNudgeIcon, CreateTaskIcon, SearchIcon } from './FlowEditorIcons';
-import { NodeCategory } from './types';
+import { NodeCategory } from './FlowEditorIconsTypes';
 
 const onDragStart = (event: React.DragEvent, nodeData: object) => {
   const data = JSON.stringify(nodeData);
