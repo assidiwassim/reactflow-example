@@ -1,15 +1,40 @@
+import React, { useState, useEffect } from 'react';
 import { SaveIcon, PlayIcon } from './FlowEditorIcons';
 import { type Workflow } from '../types';
 
 interface FlowEditorHeaderProps {
   onBack: () => void;
   workflow: Workflow | null;
+  onWorkflowNameChange: (newName: string) => void;
 }
 
-const FlowEditorHeader: React.FC<FlowEditorHeaderProps> = ({ onBack, workflow }) => {
-  const workflowName = workflow?.name || 'New Workflow';
-  const status = workflow?.status;
-  const lastModified = workflow?.lastModified;
+const FlowEditorHeader: React.FC<FlowEditorHeaderProps> = ({ onBack, workflow, onWorkflowNameChange }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [workflowName, setWorkflowName] = useState(workflow?.name || 'New Workflow');
+
+  useEffect(() => {
+    setWorkflowName(workflow?.name || 'New Workflow');
+  }, [workflow?.name]);
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setWorkflowName(e.target.value);
+  };
+
+  const handleNameSave = () => {
+    setIsEditing(false);
+    if (workflow && workflowName !== workflow.name) {
+      onWorkflowNameChange(workflowName);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleNameSave();
+    }
+  };
+
+  const status = workflow?.status || (workflow === null ? 'Draft' : undefined);
+  const lastModified = workflow?.lastModified ? new Date(workflow.lastModified).toLocaleString() : '';
   return (
     <header className="bg-white p-5 border-b">
             <div className="flex justify-between items-center">
@@ -22,21 +47,36 @@ const FlowEditorHeader: React.FC<FlowEditorHeaderProps> = ({ onBack, workflow })
           </button>
         </div>
         <div className="flex-grow text-center">
-          <div className="flex items-center justify-center gap-2">
-            <h1 className="text-xl font-bold text-gray-800">{workflowName}</h1>
+          {isEditing ? (
+            <input
+              type="text"
+              value={workflowName}
+              onChange={handleNameChange}
+              onBlur={handleNameSave}
+              onKeyDown={handleKeyDown}
+              className="text-xl font-bold text-gray-800 bg-transparent border-b-2 border-blue-500 focus:outline-none text-center"
+              autoFocus
+            />
+          ) : (
+            <h1 
+              className="text-xl font-bold text-gray-800 cursor-pointer"
+              onClick={() => setIsEditing(true)}
+            >
+              {workflowName}
+            </h1>
+          )}
+          <div className="flex items-center justify-center gap-2 mt-1">
             {status && (
-              <span
-                className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
-                  status === 'Published'
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-yellow-100 text-yellow-800'
-                }`}
-              >
-                {status}
-              </span>
+              <div className="flex items-center gap-1">
+                <span
+                  className={`h-2 w-2 rounded-full ${status === 'Published' ? 'bg-green-500' : 'bg-yellow-500'}`}>
+                </span>
+                <span className="text-xs text-gray-500">{status}</span>
+              </div>
             )}
+            {status && lastModified && <span className="text-xs text-gray-400">•</span>}
+            {lastModified && <p className="text-xs text-gray-500">Last modified: {lastModified}</p>}
           </div>
-          {lastModified && <p className="text-xs text-gray-500">Last modified: {lastModified}</p>}
         </div>
         <div className="flex items-center gap-3">
           <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">

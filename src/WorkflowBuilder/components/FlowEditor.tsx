@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { ReactFlow, ReactFlowProvider, addEdge, useNodesState, useEdgesState, Controls, Background, MiniMap } from '@xyflow/react';
 import type { Connection, Edge, Node, ReactFlowInstance } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
@@ -23,11 +23,22 @@ const minimapNodeColor = (node: Node) => {
   }
 };
 
+
+
+
 interface FlowEditorProps {
   workflow: Workflow | null;
 }
 
 const FlowEditor: React.FC<FlowEditorProps> = ({ workflow }) => {
+  const defaultEdgeOptions = useMemo(
+    () => ({
+      type: 'default',
+      style: { strokeWidth: 2.5, stroke: '#9ca3af', strokeDasharray: '5 5' },
+      animated: true,
+    }),
+    []
+  );
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(workflow?.nodes || []);
   const [edges, setEdges, onEdgesChange] = useEdgesState(workflow?.edges || []);
@@ -157,6 +168,7 @@ const FlowEditor: React.FC<FlowEditorProps> = ({ workflow }) => {
             onDrop={onDrop}
             onDragOver={onDragOver}
             onNodeClick={onNodeClick}
+            defaultEdgeOptions={defaultEdgeOptions}
             onNodeDoubleClick={onNodeDoubleClick}
             nodeTypes={nodeTypes}
             fitView

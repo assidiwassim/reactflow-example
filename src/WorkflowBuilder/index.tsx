@@ -26,6 +26,12 @@ const WorkflowBuilder = () => {
     setWorkflows(workflows.filter((w) => w.id !== workflowId));
   };
 
+  const handleWorkflowNameChange = (newName: string) => {
+    if (selectedWorkflowId) {
+      setWorkflows(workflows.map(w => w.id === selectedWorkflowId ? { ...w, name: newName, lastModified: new Date().toISOString() } : w));
+    }
+  };
+
   const handleBackToList = () => {
     setCurrentView('list');
     setSelectedWorkflowId(null);
@@ -48,7 +54,7 @@ const WorkflowBuilder = () => {
 
   return (
     <div className="workflow-builder flex flex-col h-full">
-      <FlowEditorHeader onBack={handleBackToList} workflow={selectedWorkflow} />
+      <FlowEditorHeader onBack={handleBackToList} workflow={selectedWorkflow} onWorkflowNameChange={handleWorkflowNameChange} />
       <main className="flex-grow overflow-hidden">
         <FlowEditor workflow={selectedWorkflow} />
       </main>
