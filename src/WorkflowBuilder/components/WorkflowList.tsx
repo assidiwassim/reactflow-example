@@ -4,12 +4,17 @@ import { type Workflow } from '../types';
 
 interface WorkflowListProps {
   workflows: Workflow[];
-  onEditWorkflow: (workflowId: string) => void;
+  onSelectWorkflow: (workflowId: string) => void;
   onCreateWorkflow: () => void;
   onDeleteWorkflow: (workflowId: string) => void;
 }
 
-const WorkflowList: React.FC<WorkflowListProps> = ({ workflows, onEditWorkflow, onCreateWorkflow, onDeleteWorkflow }) => {
+const WorkflowList: React.FC<WorkflowListProps> = ({
+  workflows,
+  onSelectWorkflow,
+  onCreateWorkflow,
+  onDeleteWorkflow,
+}) => {
   return (
     <div className="flex flex-col h-full ">
       <header className="bg-white p-5 border-b">
@@ -48,7 +53,7 @@ const WorkflowList: React.FC<WorkflowListProps> = ({ workflows, onEditWorkflow, 
                     {workflow.status}
                   </span>
                   <button
-                    onClick={() => onEditWorkflow(workflow.id)}
+                    onClick={() => onSelectWorkflow(workflow.id)}
                     className="text-sm font-medium text-blue-600 hover:text-blue-800"
                   >
                     <EditIcon />

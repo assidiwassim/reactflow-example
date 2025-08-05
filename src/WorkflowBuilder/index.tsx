@@ -1,10 +1,21 @@
-import { useState, useCallback, useEffect } from 'react';
-import { useNodesState, useEdgesState, addEdge, type Connection, type Edge, type Node } from '@xyflow/react';
+import { useState, useEffect, useCallback } from 'react';
+import {
+  useNodesState,
+  useEdgesState,
+  addEdge,
+} from '@xyflow/react';
+import type {
+  Edge,
+  Node,
+  Connection,
+} from '@xyflow/react';
 import FlowEditor from './components/FlowEditor';
+import Modal from './components/Modal';
+
 import FlowEditorHeader from './components/FlowEditorHeader';
 import WorkflowList from './components/WorkflowList';
 import { mockWorkflows } from './mockWorkflows';
-import { type Workflow } from './types';
+import type { Workflow } from './types';
 import './WorkflowBuilder.css';
 
 const WorkflowBuilder = () => {
@@ -12,11 +23,26 @@ const WorkflowBuilder = () => {
   const [currentView, setCurrentView] = useState<'list' | 'editor'>('list');
   const [selectedWorkflowId, setSelectedWorkflowId] = useState<string | null>(null);
 
-      const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success'>('idle');
+  const [nodes, setNodes, onNodesChangeOriginal] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChangeOriginal] = useEdgesState<Edge>([]);
 
-    const handleCreateWorkflow = () => {
+  const onNodesChange: typeof onNodesChangeOriginal = (changes) => {
+    onNodesChangeOriginal(changes);
+    setHasUnsavedChanges(true);
+  };
+
+  const onEdgesChange: typeof onEdgesChangeOriginal = (changes) => {
+    onEdgesChangeOriginal(changes);
+    setHasUnsavedChanges(true);
+  };
+
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success'>('idle');
+  const [publishStatus, setPublishStatus] = useState<'idle' | 'publishing' | 'success'>('idle');
+  const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
+
+  const handleCreateWorkflow = () => {
     const newWorkflow: Workflow = {
       id: `wf_${+new Date()}`,
       name: 'Untitled Workflow',
@@ -31,7 +57,7 @@ const WorkflowBuilder = () => {
     setCurrentView('editor');
   };
 
-  const handleEditWorkflow = (workflowId: string) => {
+  const handleSelectWorkflow = (workflowId: string) => {
     setSelectedWorkflowId(workflowId);
     setCurrentView('editor');
   };
@@ -43,10 +69,11 @@ const WorkflowBuilder = () => {
   const handleWorkflowNameChange = (newName: string) => {
     if (selectedWorkflowId) {
       setWorkflows(workflows.map(w => w.id === selectedWorkflowId ? { ...w, name: newName, lastModified: new Date().toISOString() } : w));
+      setHasUnsavedChanges(true);
     }
   };
 
-    const onConnect = useCallback((params: Connection | Edge) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+  const onConnect = useCallback((params: Connection | Edge) => setEdges((eds: Edge[]) => addEdge(params, eds)), [setEdges]);
 
   const handleSaveWorkflow = () => {
     if (!selectedWorkflowId) return;
@@ -55,19 +82,56 @@ const WorkflowBuilder = () => {
 
     // Simulate a save operation
     setTimeout(() => {
-      setWorkflows(workflows.map(w => 
-        w.id === selectedWorkflowId 
-          ? { ...w, nodes, edges, lastModified: new Date().toISOString() } 
+      setWorkflows(workflows.map(w =>
+        w.id === selectedWorkflowId
+          ? { ...w, nodes, edges, lastModified: new Date().toISOString() }
           : w
       ));
       setSaveStatus('success');
+      setHasUnsavedChanges(false);
 
       // Reset status after a few seconds
       setTimeout(() => setSaveStatus('idle'), 2000);
     }, 1000);
   };
 
+  const handlePublishWorkflow = () => {
+    setIsPublishModalOpen(true);
+  };
+
+  const confirmPublishWorkflow = () => {
+    if (!selectedWorkflowId) return;
+
+    setIsPublishModalOpen(false);
+    setPublishStatus('publishing');
+
+    // Simulate a publish operation
+    setTimeout(() => {
+      setWorkflows(workflows.map(w =>
+        w.id === selectedWorkflowId
+          ? { ...w, status: 'Published', lastModified: new Date().toISOString() }
+          : w
+      ));
+      setPublishStatus('success');
+
+      // Reset status after a few seconds
+      setTimeout(() => {
+        setPublishStatus('idle');
+      }, 2000);
+    }, 1000);
+  };
+
   const handleBackToList = () => {
+    if (hasUnsavedChanges) {
+      setIsDiscardModalOpen(true);
+    } else {
+      setCurrentView('list');
+      setSelectedWorkflowId(null);
+    }
+  };
+
+  const confirmDiscardChanges = () => {
+    setIsDiscardModalOpen(false);
     setCurrentView('list');
     setSelectedWorkflowId(null);
   };
@@ -78,47 +142,65 @@ const WorkflowBuilder = () => {
     if (selectedWorkflow) {
       setNodes(selectedWorkflow.nodes || []);
       setEdges(selectedWorkflow.edges || []);
+      setHasUnsavedChanges(false); // Reset unsaved changes when a workflow is loaded
     } else {
       setNodes([]);
       setEdges([]);
     }
   }, [selectedWorkflow, setNodes, setEdges]);
 
-  
-
-  if (currentView === 'list') {
-    return (
-      <div className="workflow-builder h-full">
-        <WorkflowList
-          workflows={workflows}
-          onCreateWorkflow={handleCreateWorkflow}
-          onEditWorkflow={handleEditWorkflow}
+  return (
+    <div className="h-screen w-full flex flex-col bg-gray-50">
+      {currentView === 'list' ? (
+        <WorkflowList 
+          workflows={workflows} 
+          onSelectWorkflow={handleSelectWorkflow} 
+          onCreateWorkflow={handleCreateWorkflow} 
           onDeleteWorkflow={handleDeleteWorkflow}
         />
-      </div>
-    );
-  }
-
-  return (
-    <div className="workflow-builder flex flex-col h-full">
-      <FlowEditorHeader 
-        onBack={handleBackToList} 
-        workflow={selectedWorkflow} 
-        onWorkflowNameChange={handleWorkflowNameChange} 
-        onSave={handleSaveWorkflow}
-        saveStatus={saveStatus}
-      />
-      <main className="flex-grow overflow-hidden">
-        <FlowEditor 
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          setNodes={setNodes}
-          
-        />
-      </main>
+      ) : (
+        <>
+          <FlowEditorHeader 
+            onBack={handleBackToList}
+            workflow={selectedWorkflow}
+            onWorkflowNameChange={handleWorkflowNameChange} 
+            onSave={handleSaveWorkflow}
+            saveStatus={saveStatus}
+            onPublish={handlePublishWorkflow}
+            publishStatus={publishStatus}
+            hasUnsavedChanges={hasUnsavedChanges}
+          />
+          <main className="flex-grow overflow-hidden">
+            <FlowEditor 
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              setNodes={setNodes}
+            />
+          </main>
+        </>
+      )}
+      <Modal
+        isOpen={isPublishModalOpen}
+        onClose={() => setIsPublishModalOpen(false)}
+        onConfirm={confirmPublishWorkflow}
+        title="Publish Workflow"
+      >
+        Are you sure you want to publish this workflow? This action cannot be undone.
+      </Modal>
+      
+      <Modal
+        isOpen={isDiscardModalOpen}
+        onClose={() => setIsDiscardModalOpen(false)}
+        onConfirm={confirmDiscardChanges}
+        title="Discard Changes?"
+        confirmText="Discard"
+        cancelText="Cancel"
+      >
+        You have unsaved changes. Are you sure you want to discard them and go back to the list?
+      </Modal>
     </div>
   );
 };

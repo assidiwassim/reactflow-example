@@ -86,7 +86,7 @@ const FlowEditorSidebar = () => {
   };
 
   return (
-    <aside className="w-80 bg-white rounded-xl p-3 overflow-y-auto flex flex-col gap-4 custom-scrollbar">
+    <aside className="w-80 bg-white rounded-xl p-3 border overflow-y-auto flex flex-col gap-4 custom-scrollbar">
       <div className="relative">
         <span className="absolute inset-y-0 left-0 flex items-center pl-3">
           <SearchIcon />

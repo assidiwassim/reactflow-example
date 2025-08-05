@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SaveIcon, PlayIcon, BackIcon, LoaderIcon, CheckIcon, EditIcon } from './FlowEditorIcons';
+import { SaveIcon, PlayIcon, BackIcon, LoaderIcon, CheckIcon, EditIcon, PublishIcon } from './FlowEditorIcons';
 import { type Workflow } from '../types';
 
 interface FlowEditorHeaderProps {
@@ -8,9 +8,15 @@ interface FlowEditorHeaderProps {
   onWorkflowNameChange: (newName: string) => void;
   onSave: () => void;
   saveStatus: 'idle' | 'saving' | 'success';
+  onPublish: () => void;
+  publishStatus: 'idle' | 'publishing' | 'success';
+  hasUnsavedChanges: boolean;
 }
 
-const FlowEditorHeader: React.FC<FlowEditorHeaderProps> = ({ onBack, workflow, onWorkflowNameChange, onSave, saveStatus }) => {
+const FlowEditorHeader: React.FC<FlowEditorHeaderProps> = ({ onBack, workflow, onWorkflowNameChange, onSave, saveStatus, onPublish, publishStatus, hasUnsavedChanges }) => {
+  const isPublished = workflow?.status === 'Published';
+  const isPublishing = publishStatus === 'publishing';
+  const isPublishSuccess = publishStatus === 'success';
   const [isEditing, setIsEditing] = useState(false);
   const [workflowName, setWorkflowName] = useState(workflow?.name || 'New Workflow');
 
@@ -103,6 +109,28 @@ const FlowEditorHeader: React.FC<FlowEditorHeaderProps> = ({ onBack, workflow, o
             <SaveIcon />
             Save Workflow
           </button>
+          <div className="relative group">
+            <button 
+              onClick={onPublish} 
+              disabled={isPublished || isPublishing || isPublishSuccess || hasUnsavedChanges}
+              className={`flex items-center justify-center w-[120px] px-4 py-2 text-sm font-medium text-white border border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 
+                ${isPublished || isPublishSuccess 
+                  ? 'bg-blue-500 focus:ring-green-500'
+                  : 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-500'}
+                disabled:cursor-not-allowed`
+              }
+            >
+              {isPublishing && <><LoaderIcon /> <span className="ml-2">Publishing...</span></>}
+              {(isPublished || isPublishSuccess) && !isPublishing && <><CheckIcon /> <span className="ml-2">Published</span></>}
+              {!isPublished && !isPublishing && !isPublishSuccess && <><PublishIcon /> <span className="ml-1">Publish</span></>}
+            </button>
+            {hasUnsavedChanges && (
+              <div className="absolute top-full mt-2 w-max px-3 py-1.5 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Save your changes before publishing
+                <div className="tooltip-arrow" data-popper-arrow></div>
+              </div>
+            )}
+          </div>
           <button className="flex items-center px-4 py-2 text-sm font-medium text-white bg-green-500 border border-transparent rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
             <PlayIcon />
             Test Workflow

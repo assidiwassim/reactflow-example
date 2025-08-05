@@ -23,9 +23,6 @@ const minimapNodeColor = (node: Node) => {
   }
 };
 
-
-
-
 interface FlowEditorProps {
   nodes: Node[];
   edges: Edge[];
@@ -33,21 +30,19 @@ interface FlowEditorProps {
   onEdgesChange: OnEdgesChange;
   onConnect: (params: Connection | Edge) => void;
   setNodes: (nodes: Node[] | ((nodes: Node[]) => Node[])) => void;
-  
+
 }
 
 const FlowEditor: React.FC<FlowEditorProps> = ({ nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes }) => {
   const defaultEdgeOptions = {
-  type: 'default',
-  style: { strokeWidth: 2.5, stroke: '#9ca3af', strokeDasharray: '5 5' },
-  animated: true,
-};
-    const reactFlowWrapper = useRef<HTMLDivElement>(null);
+    type: 'default',
+    style: { strokeWidth: 2.5, stroke: '#9ca3af', strokeDasharray: '5 5' },
+    animated: true,
+  };
+  const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
@@ -92,7 +87,7 @@ const FlowEditor: React.FC<FlowEditorProps> = ({ nodes, edges, onNodesChange, on
     setIsModalOpen(true);
   };
 
-    const handleNodeSave = (newName: string) => {
+  const handleNodeSave = (newName: string) => {
     if (!selectedNode) return;
     setNodes((nds) =>
       nds.map((n) => {
@@ -160,7 +155,7 @@ const FlowEditor: React.FC<FlowEditorProps> = ({ nodes, edges, onNodesChange, on
         </div>
       </ReactFlowProvider>
       {isModalOpen && selectedNode && (
-                <NodeConfigurationModal
+        <NodeConfigurationModal
           isOpen={isModalOpen}
           node={selectedNode}
           onClose={() => setIsModalOpen(false)}
