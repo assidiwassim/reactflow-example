@@ -1,12 +1,12 @@
-import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
-import { ReactFlow, ReactFlowProvider, addEdge, useNodesState, useEdgesState, Controls, Background, MiniMap } from '@xyflow/react';
-import type { Connection, Edge, Node, ReactFlowInstance } from '@xyflow/react';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { ReactFlow, ReactFlowProvider, Controls, Background, MiniMap } from '@xyflow/react';
+import type { Connection, Edge, Node, ReactFlowInstance, OnNodesChange, OnEdgesChange } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import FlowEditorSidebar from './FlowEditorSidebar';
 import { CustomNode } from './CustomNode';
 import { NodeCategory } from './FlowEditorIconsTypes';
 import { NodeConfigurationModal } from './NodeConfigurationModal';
-import { type Workflow } from '../types';
+
 
 const nodeTypes = { custom: CustomNode };
 
@@ -27,48 +27,27 @@ const minimapNodeColor = (node: Node) => {
 
 
 interface FlowEditorProps {
-  workflow: Workflow | null;
+  nodes: Node[];
+  edges: Edge[];
+  onNodesChange: OnNodesChange;
+  onEdgesChange: OnEdgesChange;
+  onConnect: (params: Connection | Edge) => void;
+  setNodes: (nodes: Node[] | ((nodes: Node[]) => Node[])) => void;
+  
 }
 
-const FlowEditor: React.FC<FlowEditorProps> = ({ workflow }) => {
-  const defaultEdgeOptions = useMemo(
-    () => ({
-      type: 'default',
-      style: { strokeWidth: 2.5, stroke: '#9ca3af', strokeDasharray: '5 5' },
-      animated: true,
-    }),
-    []
-  );
-  const reactFlowWrapper = useRef<HTMLDivElement>(null);
-  const [nodes, setNodes, onNodesChange] = useNodesState(workflow?.nodes || []);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(workflow?.edges || []);
+const FlowEditor: React.FC<FlowEditorProps> = ({ nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes }) => {
+  const defaultEdgeOptions = {
+  type: 'default',
+  style: { strokeWidth: 2.5, stroke: '#9ca3af', strokeDasharray: '5 5' },
+  animated: true,
+};
+    const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    if (workflow) {
-      setNodes(workflow.nodes || []);
-      setEdges(workflow.edges || []);
-    } else {
-      setNodes([]);
-      setEdges([]);
-    }
-  }, [workflow, setNodes, setEdges]);
-
-  const onConnect = useCallback(
-    (params: Connection | Edge) => {
-      if (!reactFlowInstance) return;
-      const { target } = params;
-      const targetNode = reactFlowInstance.getNode(target as string);
-      if (targetNode?.data.category === NodeCategory.Trigger) {
-        console.warn('Triggers cannot have incoming connections.');
-        return;
-      }
-      setEdges((eds) => addEdge(params, eds));
-    },
-    [reactFlowInstance, setEdges]
-  );
+  
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();

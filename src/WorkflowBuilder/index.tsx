@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useNodesState, useEdgesState, addEdge, type Connection, type Edge, type Node } from '@xyflow/react';
 import FlowEditor from './components/FlowEditor';
 import FlowEditorHeader from './components/FlowEditorHeader';
 import WorkflowList from './components/WorkflowList';
@@ -11,9 +12,22 @@ const WorkflowBuilder = () => {
   const [currentView, setCurrentView] = useState<'list' | 'editor'>('list');
   const [selectedWorkflowId, setSelectedWorkflowId] = useState<string | null>(null);
 
-  const handleCreateWorkflow = () => {
-    // In a real app, you'd create a new workflow object and get a new ID
-    setSelectedWorkflowId('new'); // Use a special ID for new workflows
+      const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success'>('idle');
+
+    const handleCreateWorkflow = () => {
+    const newWorkflow: Workflow = {
+      id: `wf_${+new Date()}`,
+      name: 'Untitled Workflow',
+      description: 'A new workflow',
+      nodes: [],
+      edges: [],
+      status: 'Draft',
+      lastModified: new Date().toISOString(),
+    };
+    setWorkflows(prev => [...prev, newWorkflow]);
+    setSelectedWorkflowId(newWorkflow.id);
     setCurrentView('editor');
   };
 
@@ -32,12 +46,45 @@ const WorkflowBuilder = () => {
     }
   };
 
+    const onConnect = useCallback((params: Connection | Edge) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+
+  const handleSaveWorkflow = () => {
+    if (!selectedWorkflowId) return;
+
+    setSaveStatus('saving');
+
+    // Simulate a save operation
+    setTimeout(() => {
+      setWorkflows(workflows.map(w => 
+        w.id === selectedWorkflowId 
+          ? { ...w, nodes, edges, lastModified: new Date().toISOString() } 
+          : w
+      ));
+      setSaveStatus('success');
+
+      // Reset status after a few seconds
+      setTimeout(() => setSaveStatus('idle'), 2000);
+    }, 1000);
+  };
+
   const handleBackToList = () => {
     setCurrentView('list');
     setSelectedWorkflowId(null);
   };
 
   const selectedWorkflow = workflows.find((w) => w.id === selectedWorkflowId) || null;
+
+  useEffect(() => {
+    if (selectedWorkflow) {
+      setNodes(selectedWorkflow.nodes || []);
+      setEdges(selectedWorkflow.edges || []);
+    } else {
+      setNodes([]);
+      setEdges([]);
+    }
+  }, [selectedWorkflow, setNodes, setEdges]);
+
+  
 
   if (currentView === 'list') {
     return (
@@ -54,9 +101,23 @@ const WorkflowBuilder = () => {
 
   return (
     <div className="workflow-builder flex flex-col h-full">
-      <FlowEditorHeader onBack={handleBackToList} workflow={selectedWorkflow} onWorkflowNameChange={handleWorkflowNameChange} />
+      <FlowEditorHeader 
+        onBack={handleBackToList} 
+        workflow={selectedWorkflow} 
+        onWorkflowNameChange={handleWorkflowNameChange} 
+        onSave={handleSaveWorkflow}
+        saveStatus={saveStatus}
+      />
       <main className="flex-grow overflow-hidden">
-        <FlowEditor workflow={selectedWorkflow} />
+        <FlowEditor 
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          setNodes={setNodes}
+          
+        />
       </main>
     </div>
   );

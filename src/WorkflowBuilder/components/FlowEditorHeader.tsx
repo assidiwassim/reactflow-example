@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { SaveIcon, PlayIcon } from './FlowEditorIcons';
+import { SaveIcon, PlayIcon, BackIcon, LoaderIcon, CheckIcon, EditIcon } from './FlowEditorIcons';
 import { type Workflow } from '../types';
 
 interface FlowEditorHeaderProps {
   onBack: () => void;
   workflow: Workflow | null;
   onWorkflowNameChange: (newName: string) => void;
+  onSave: () => void;
+  saveStatus: 'idle' | 'saving' | 'success';
 }
 
-const FlowEditorHeader: React.FC<FlowEditorHeaderProps> = ({ onBack, workflow, onWorkflowNameChange }) => {
+const FlowEditorHeader: React.FC<FlowEditorHeaderProps> = ({ onBack, workflow, onWorkflowNameChange, onSave, saveStatus }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [workflowName, setWorkflowName] = useState(workflow?.name || 'New Workflow');
 
@@ -37,7 +39,7 @@ const FlowEditorHeader: React.FC<FlowEditorHeaderProps> = ({ onBack, workflow, o
   const lastModified = workflow?.lastModified ? new Date(workflow.lastModified).toLocaleString() : '';
   return (
     <header className="bg-white p-5 border-b">
-            <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
           <button onClick={onBack} className="text-sm font-medium text-gray-600 hover:text-gray-900 flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -45,6 +47,7 @@ const FlowEditorHeader: React.FC<FlowEditorHeaderProps> = ({ onBack, workflow, o
             </svg>
             Back to Workflows
           </button>
+          <span className="text-gray-300">|</span>
         </div>
         <div className="flex-grow text-center">
           {isEditing ? (
@@ -58,12 +61,14 @@ const FlowEditorHeader: React.FC<FlowEditorHeaderProps> = ({ onBack, workflow, o
               autoFocus
             />
           ) : (
-            <h1 
-              className="text-xl font-bold text-gray-800 cursor-pointer"
-              onClick={() => setIsEditing(true)}
-            >
-              {workflowName}
-            </h1>
+            <div className="flex items-center justify-center gap-2">
+              <h1 className="text-xl font-bold text-gray-800">
+                {workflowName}
+              </h1>
+              <button onClick={() => setIsEditing(true)} className="p-1 rounded-md hover:bg-gray-200">
+                <EditIcon />
+              </button>
+            </div>
           )}
           <div className="flex items-center justify-center gap-2 mt-1">
             {status && (
@@ -78,8 +83,22 @@ const FlowEditorHeader: React.FC<FlowEditorHeaderProps> = ({ onBack, workflow, o
             {lastModified && <p className="text-xs text-gray-500">Last modified: {lastModified}</p>}
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center min-w-[120px]">
+            {saveStatus === 'saving' && (
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <LoaderIcon />
+                <span>Saving...</span>
+              </div>
+            )}
+            {saveStatus === 'success' && (
+              <div className="flex items-center gap-2 text-sm text-green-500">
+                <CheckIcon />
+                <span>Saved!</span>
+              </div>
+            )}
+          </div>
+          <button onClick={onSave} disabled={saveStatus === 'saving'} className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
             <SaveIcon />
             Save Workflow
           </button>
