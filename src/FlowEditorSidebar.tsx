@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Collapsible } from './Collapsible';
+import { FlowEditorCollapsible } from './FlowEditorCollapsible';
 import { TriggersIcon, ConditionsIcon, ActionsIcon, StagnationIcon, NoActivityIcon, StageChangeIcon, DataChangeIcon, SendIcon, ExitIcon, SendNudgeIcon, CreateTaskIcon, SearchIcon } from './FlowEditorIcons';
 import { NodeCategory } from './types';
 
@@ -9,7 +9,7 @@ const onDragStart = (event: React.DragEvent, nodeData: object) => {
   event.dataTransfer.effectAllowed = 'move';
 };
 
-const SidebarNode = ({ data, icon: Icon, nodeBorderColor, iconBgColor }: { data: { type: string; name: string; description: string; icon: string; category: string; status: string; }; icon: React.ComponentType; nodeBorderColor: string; iconBgColor: string; }) => (
+const FlowEditorSidebarNode = ({ data, icon: Icon, nodeBorderColor, iconBgColor }: { data: { type: string; name: string; description: string; icon: string; category: string; status: string; }; icon: React.ComponentType; nodeBorderColor: string; iconBgColor: string; }) => (
   <div
     className={`flex items-center p-3 bg-white border rounded-lg cursor-grab transition-shadow hover:shadow-md ${nodeBorderColor}`}
     onDragStart={(event) => onDragStart(event, data)}
@@ -43,7 +43,7 @@ const actionNodes = [
   { data: { type: 'Create Task', name: 'Create Task', description: 'Create follow-up task', icon: 'create-task', category: NodeCategory.Action, status: 'Configured' }, icon: CreateTaskIcon },
 ];
 
-const Sidebar = () => {
+const FlowEditorSidebar = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filterNodes = (nodes: any[]) => {
@@ -99,38 +99,38 @@ const Sidebar = () => {
           className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
-      <Collapsible
+      <FlowEditorCollapsible
         title="Triggers"
         count={filteredTriggerNodes.length}
         icon={TriggersIcon}
         {...sectionStyles.triggers}
       >
         {filteredTriggerNodes.map((node, index) => (
-          <SidebarNode key={index} data={node.data} icon={node.icon} {...sectionStyles.triggers} />
+          <FlowEditorSidebarNode key={index} data={node.data} icon={node.icon} {...sectionStyles.triggers} />
         ))}
-      </Collapsible>
-      <Collapsible
+      </FlowEditorCollapsible>
+      <FlowEditorCollapsible
         title="Conditions"
         count={filteredConditionNodes.length}
         icon={ConditionsIcon}
         {...sectionStyles.conditions}
       >
         {filteredConditionNodes.map((node, index) => (
-          <SidebarNode key={index} data={node.data} icon={node.icon} {...sectionStyles.conditions} />
+          <FlowEditorSidebarNode key={index} data={node.data} icon={node.icon} {...sectionStyles.conditions} />
         ))}
-      </Collapsible>
-      <Collapsible
+      </FlowEditorCollapsible>
+      <FlowEditorCollapsible
         title="Actions"
         count={filteredActionNodes.length}
         icon={ActionsIcon}
         {...sectionStyles.actions}
       >
         {filteredActionNodes.map((node, index) => (
-          <SidebarNode key={index} data={node.data} icon={node.icon} {...sectionStyles.actions} />
+          <FlowEditorSidebarNode key={index} data={node.data} icon={node.icon} {...sectionStyles.actions} />
         ))}
-      </Collapsible>
+      </FlowEditorCollapsible>
     </aside>
   );
 };
 
-export default Sidebar;
+export default FlowEditorSidebar;

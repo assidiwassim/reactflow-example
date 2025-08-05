@@ -16,7 +16,7 @@ const ChevronDown = () => (
   </svg>
 );
 
-export const Collapsible: React.FC<CollapsibleProps> = ({ title, count, icon: Icon, children, sectionClasses, iconBgClass, iconClass }) => {
+export const FlowEditorCollapsible: React.FC<CollapsibleProps> = ({ title, count, icon: Icon, children, sectionClasses, iconBgClass, iconClass }) => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (

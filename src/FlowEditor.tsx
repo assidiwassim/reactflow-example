@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { ReactFlow, ReactFlowProvider, addEdge, useNodesState, useEdgesState, Controls, Background, MiniMap, Panel } from '@xyflow/react';
 import type { Connection, Edge, Node, ReactFlowInstance } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import Sidebar from './Sidebar';
+import FlowEditorSidebar from './FlowEditorSidebar';
 import { CustomNode } from './CustomNode';
 import { NodeCategory } from './types';
 import { NodeConfigurationModal } from './NodeConfigurationModal';
@@ -128,7 +128,7 @@ const FlowEditor = () => {
 
   return (
     <div className="flex flex-grow p-5 gap-5 h-full overflow-hidden">
-      <Sidebar />
+      <FlowEditorSidebar />
       <ReactFlowProvider>
         <div className="flex-grow bg-white rounded-lg border p-5 relative" ref={reactFlowWrapper}>
           <div className="flex justify-between items-center">
