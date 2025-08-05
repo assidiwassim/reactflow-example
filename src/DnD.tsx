@@ -11,7 +11,7 @@ const nodeTypes = { custom: CustomNode };
 
 const initialNodes: Node[] = [];
 
-const getId = () => `dndnode_${+new Date()}`;
+const getId = () => `${+new Date()}`;
 
 const DnDFlow = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -31,7 +31,18 @@ const DnDFlow = () => {
     []
   );
 
-  const onConnect = useCallback((params: Connection) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+  const onConnect = useCallback(
+    (params: Connection) => {
+      const targetNode = nodes.find((node) => node.id === params.target);
+
+      if (targetNode?.data?.category === 'trigger') {
+        return;
+      }
+
+      setEdges((eds) => addEdge(params, eds));
+    },
+    [nodes, setEdges]
+  );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
@@ -86,7 +97,7 @@ const DnDFlow = () => {
     setSelectedNode(null);
   };
 
-  const handleModalSave = (newLabel: string) => {
+  const handleModalSave = (newName: string) => {
     if (!selectedNode) return;
 
     setNodes((nds) =>
@@ -96,9 +107,9 @@ const DnDFlow = () => {
             ...node,
             data: {
               ...node.data,
-              label: newLabel,
+              name: newName,
               isConfigured: true,
-              config: { ...(node.data.config || {}), label: newLabel },
+              config: { ...(node.data.config || {}), name: newName },
             },
           };
         }
@@ -151,7 +162,7 @@ const DnDFlow = () => {
               <Background gap={20} size={1} />
               <MiniMap
                 nodeColor={(node) => {
-                  switch (node.data.type) {
+                  switch (node.data.category) {
                     case 'trigger':
                       return '#4ade80'; // green-400
                     case 'condition':

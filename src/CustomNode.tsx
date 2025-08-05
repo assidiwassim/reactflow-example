@@ -27,9 +27,10 @@ const typeStyles = {
 };
 
 export type CustomNodeData = {
-  label: string;
+  name: string;
+  type: string;
   description: string;
-  type: 'trigger' | 'condition' | 'action';
+  category: 'trigger' | 'condition' | 'action';
   icon: string;
   isConfigured: boolean;
   config?: { [key: string]: any };
@@ -37,7 +38,7 @@ export type CustomNodeData = {
 
 export function CustomNode({ data }: { data: CustomNodeData }) {
   const Icon = getIcon(data.icon);
-  const styles = typeStyles[data.type] || {};
+  const styles = typeStyles[data.category] || {};
 
   return (
     <div className={`group bg-white border-2 ${styles.borderColor} rounded-lg shadow-md w-64 hover:shadow-lg transition-shadow relative`}>
@@ -47,11 +48,13 @@ export function CustomNode({ data }: { data: CustomNodeData }) {
         </button>
       </div>
       <div className="relative p-4">
+              {data.category !== 'trigger' && (
         <Handle type="target" position={Position.Left} className="!w-3 !h-3 !absolute !-left-1.5 !top-1/2 !-translate-y-1/2" style={{ backgroundColor: styles.handleColor, border: '2px solid white' }} />
+      )}
         <div className="flex items-start">
           {Icon && <div className="w-8 h-8 flex items-center justify-center rounded-md mr-4"><Icon /></div>}
           <div className="flex flex-col flex-grow">
-            <div className="font-bold text-gray-800">{data.label}</div>
+            <div className="font-bold text-gray-800">{data.name}</div>
             <div className={`text-xs font-semibold uppercase tracking-wider ${styles.textColor}`}>{data.type}</div>
             <div className="text-sm text-gray-600 mt-1">{data.description}</div>
           </div>
