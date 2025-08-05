@@ -1,12 +1,12 @@
-import DnDFlow from './DnD';
-import Header from './Header';
+import FlowEditor from './FlowEditor';
+import FlowEditorHeader from './FlowEditorHeader';
 
 function App() {
   return (
     <div className="flex flex-col h-screen ">
-      <Header />
+      <FlowEditorHeader />
       <main className="flex-grow overflow-hidden">
-        <DnDFlow />
+        <FlowEditor />
       </main>
     </div>
   );

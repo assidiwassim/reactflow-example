@@ -2,19 +2,17 @@ import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { ReactFlow, ReactFlowProvider, addEdge, useNodesState, useEdgesState, Controls, Background, MiniMap, Panel } from '@xyflow/react';
 import type { Connection, Edge, Node, ReactFlowInstance } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-
 import Sidebar from './Sidebar';
 import { CustomNode } from './CustomNode';
 import { NodeCategory } from './types';
-import { ConfigurationModal } from './ConfigurationModal';
+import { NodeConfigurationModal } from './NodeConfigurationModal';
 
 const nodeTypes = { custom: CustomNode };
 
 const initialNodes: Node[] = [];
 
-const getId = () => `${+new Date()}`;
+const FlowEditor = () => {
 
-const DnDFlow = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const initialEdges: Edge[] = [];
@@ -72,9 +70,9 @@ const DnDFlow = () => {
       });
 
       const newNode: Node = {
-        id: getId(),
-        type: 'custom',
+        id: `${+new Date()}`,
         position,
+        type: 'custom',
         data: { ...nodeData, isConfigured: false, config: {} },
       };
 
@@ -185,7 +183,7 @@ const DnDFlow = () => {
           </div>
         </div>
       </ReactFlowProvider>
-      <ConfigurationModal
+      <NodeConfigurationModal
         isOpen={isModalOpen}
         onClose={handleModalClose}
         onSave={handleModalSave}
@@ -196,4 +194,4 @@ const DnDFlow = () => {
   );
 };
 
-export default DnDFlow;
+export default FlowEditor;

@@ -1,6 +1,6 @@
 import { SaveIcon, PlayIcon } from './icons';
 
-const Header = () => {
+const FlowEditorHeader = () => {
   return (
     <header className="bg-white p-5 border-b">
       <div className="flex justify-between items-center">
@@ -26,4 +26,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default FlowEditorHeader;

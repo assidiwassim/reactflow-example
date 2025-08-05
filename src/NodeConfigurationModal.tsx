@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { Node } from '@xyflow/react';
 
-type ConfigurationModalProps = {
+type NodeConfigurationModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSave: (newName: string) => void;
@@ -9,7 +9,7 @@ type ConfigurationModalProps = {
   node: Node | null;
 };
 
-export const ConfigurationModal = ({ isOpen, onClose, onSave, onDelete, node }: ConfigurationModalProps) => {
+export const NodeConfigurationModal = ({ isOpen, onClose, onSave, onDelete, node }: NodeConfigurationModalProps) => {
   const [name, setName] = useState('');
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
