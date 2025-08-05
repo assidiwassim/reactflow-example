@@ -48,7 +48,7 @@ const WorkflowBuilder = () => {
 
   return (
     <div className="workflow-builder flex flex-col h-full">
-      <FlowEditorHeader onBack={handleBackToList} workflowName={selectedWorkflow?.name} />
+      <FlowEditorHeader onBack={handleBackToList} workflow={selectedWorkflow} />
       <main className="flex-grow overflow-hidden">
         <FlowEditor workflow={selectedWorkflow} />
       </main>

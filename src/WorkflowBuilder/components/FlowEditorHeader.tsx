@@ -1,11 +1,15 @@
 import { SaveIcon, PlayIcon } from './FlowEditorIcons';
+import { type Workflow } from '../types';
 
 interface FlowEditorHeaderProps {
   onBack: () => void;
-  workflowName?: string;
+  workflow: Workflow | null;
 }
 
-const FlowEditorHeader: React.FC<FlowEditorHeaderProps> = ({ onBack, workflowName }) => {
+const FlowEditorHeader: React.FC<FlowEditorHeaderProps> = ({ onBack, workflow }) => {
+  const workflowName = workflow?.name || 'New Workflow';
+  const status = workflow?.status;
+  const lastModified = workflow?.lastModified;
   return (
     <header className="bg-white p-5 border-b">
             <div className="flex justify-between items-center">
@@ -16,11 +20,23 @@ const FlowEditorHeader: React.FC<FlowEditorHeaderProps> = ({ onBack, workflowNam
             </svg>
             Back to Workflows
           </button>
-          <span className="text-gray-300">|</span>
         </div>
-        <div>
-                    <h1 className="text-xl font-bold text-gray-800">{workflowName || 'New Workflow'}</h1>
-          <p className="text-sm text-gray-500">{workflowName ? 'Edit your workflow' : 'Create a new workflow'}</p>
+        <div className="flex-grow text-center">
+          <div className="flex items-center justify-center gap-2">
+            <h1 className="text-xl font-bold text-gray-800">{workflowName}</h1>
+            {status && (
+              <span
+                className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
+                  status === 'Published'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-yellow-100 text-yellow-800'
+                }`}
+              >
+                {status}
+              </span>
+            )}
+          </div>
+          {lastModified && <p className="text-xs text-gray-500">Last modified: {lastModified}</p>}
         </div>
         <div className="flex items-center gap-3">
           <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
