@@ -54,6 +54,7 @@ const FlowEditorHeader: React.FC<FlowEditorHeaderProps> = ({ onBack, workflow, o
             <input
               type="text"
               value={workflowName}
+              size={Math.max(workflowName.length, 1)}
               onChange={handleNameChange}
               onBlur={handleNameSave}
               onKeyDown={handleKeyDown}
