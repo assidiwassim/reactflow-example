@@ -15,6 +15,8 @@ import Modal from './components/Modal';
 import FlowEditorHeader from './components/FlowEditorHeader';
 import WorkflowList from './components/WorkflowList';
 import { mockWorkflows } from './mockWorkflows';
+
+import ExecutionLogModal from './components/ExecutionLogModal';
 import type { Workflow } from './types';
 import './WorkflowBuilder.css';
 
@@ -22,6 +24,8 @@ const WorkflowBuilder = () => {
   const [workflows, setWorkflows] = useState<Workflow[]>(mockWorkflows);
   const [currentView, setCurrentView] = useState<'list' | 'editor'>('list');
   const [selectedWorkflowId, setSelectedWorkflowId] = useState<string | null>(null);
+  const [isLogModalOpen, setIsLogModalOpen] = useState(false);
+  const [selectedLogWorkflow, setSelectedLogWorkflow] = useState<Workflow | null>(null);
 
   const [nodes, setNodes, onNodesChangeOriginal] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChangeOriginal] = useEdgesState<Edge>([]);
@@ -133,6 +137,19 @@ const WorkflowBuilder = () => {
     }, 1000);
   };
 
+  const handleShowLogs = (workflowId: string) => {
+    const workflow = workflows.find(w => w.id === workflowId);
+    if (workflow) {
+      setSelectedLogWorkflow(workflow);
+      setIsLogModalOpen(true);
+    }
+  };
+
+  const handleCloseLogModal = () => {
+    setIsLogModalOpen(false);
+    setSelectedLogWorkflow(null);
+  };
+
   const handleBackToList = () => {
     if (hasUnsavedChanges) {
       setIsDiscardModalOpen(true);
@@ -169,6 +186,7 @@ const WorkflowBuilder = () => {
           onSelectWorkflow={handleSelectWorkflow} 
           onCreateWorkflow={handleCreateWorkflow} 
           onDeleteWorkflow={handleDeleteWorkflow}
+          onShowLogs={handleShowLogs}
         />
       ) : (
         <>
@@ -223,6 +241,11 @@ const WorkflowBuilder = () => {
       >
         Are you sure you want to delete this workflow? This action cannot be undone.
       </Modal>
+      <ExecutionLogModal 
+        isOpen={isLogModalOpen} 
+        onClose={handleCloseLogModal} 
+        workflow={selectedLogWorkflow} 
+      />
     </div>
   );
 };
