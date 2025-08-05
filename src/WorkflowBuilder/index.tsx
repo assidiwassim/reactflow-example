@@ -49,10 +49,11 @@ const WorkflowBuilder = () => {
       id: `wf_${+new Date()}`,
       name: 'Untitled Workflow',
       description: 'A new workflow',
-      nodes: [],
-      edges: [],
       status: 'Draft',
       lastModified: new Date().toISOString(),
+      executionCount: 0,
+      nodes: [],
+      edges: [],
     };
     setWorkflows(prev => [...prev, newWorkflow]);
     setSelectedWorkflowId(newWorkflow.id);

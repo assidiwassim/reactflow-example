@@ -40,7 +40,11 @@ const WorkflowList: React.FC<WorkflowListProps> = ({
                 <div className="flex-grow">
                   <p className="font-semibold text-lg text-gray-800">{workflow.name}</p>
                   <p className="text-sm text-gray-500 mt-1">{workflow.description}</p>
-                  <p className="text-xs text-gray-400 mt-2">Last Modified: {workflow.lastModified}</p>
+                  <div className="flex items-center text-xs text-gray-400 mt-2">
+                    <span>Last Modified: {workflow.lastModified}</span>
+                    <span className="mx-2">•</span>
+                    <span>{workflow.executionCount} Executions</span>
+                  </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <span

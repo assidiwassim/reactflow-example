@@ -8,4 +8,5 @@ export interface Workflow {
   status: 'Draft' | 'Published';
   nodes: Node[];
   edges: Edge[];
+  executionCount: number;
 }
