@@ -11,6 +11,7 @@ const typeStyles = {
     badgeBg: 'bg-green-100',
     badgeText: 'text-green-800',
     handleColor: '#4ade80',
+    iconColor: 'text-green-600',
   },
   [NodeCategory.Condition]: {
     borderColor: 'border-blue-400',
@@ -18,6 +19,7 @@ const typeStyles = {
     badgeBg: 'bg-blue-100',
     badgeText: 'text-blue-800',
     handleColor: '#60a5fa',
+    iconColor: 'text-blue-600',
   },
   [NodeCategory.Action]: {
     borderColor: 'border-purple-400',
@@ -25,6 +27,7 @@ const typeStyles = {
     badgeBg: 'bg-purple-100',
     badgeText: 'text-purple-800',
     handleColor: '#c084fc',
+    iconColor: 'text-purple-600',
   },
 };
 
@@ -40,17 +43,21 @@ export function CustomNode({ data }: { data: CustomNodeData }) {
         </button>
       </div>
       <div className="relative p-4">
-              {data.category !== NodeCategory.Trigger && (
-        <Handle type="target" position={Position.Left} className="!w-3 !h-3 !absolute !-left-1.5 !top-1/2 !-translate-y-1/2" style={{ backgroundColor: styles.handleColor, border: '2px solid white' }} />
-      )}
-        <div className="flex items-start">
-          {Icon && <div className="w-8 h-8 flex items-center justify-center rounded-md mr-4"><Icon /></div>}
+        {data.category !== NodeCategory.Trigger && (
+          <Handle type="target" position={Position.Left} className="!w-3 !h-3 !absolute !-left-1.5 !top-1/2 !-translate-y-1/2" style={{ backgroundColor: styles.handleColor, border: '2px solid white' }} />
+        )}
+        <div className="flex items-start gap-4">
+          {Icon && (
+            <div className={`w-10 h-10 flex items-center justify-center rounded-full ${styles.badgeBg}`}>
+              <Icon className={`w-6 h-6 ${styles.iconColor}`} />
+            </div>
+          )}
           <div className="flex flex-col flex-grow">
             <div className="font-bold text-gray-800">{data.name}</div>
-            <div className={`text-xs font-semibold uppercase tracking-wider ${styles.textColor}`}>{data.type}</div>
-            <div className="text-sm text-gray-600 mt-1">{data.description}</div>
+            <div className={`text-xs font-semibold uppercase tracking-wider ${styles.textColor}`}>{data.category}</div>
           </div>
         </div>
+        <div className="text-sm text-gray-600 mt-2">{data.description}</div>
         <Handle type="source" position={Position.Right} className="!w-3 !h-3 !absolute !-right-1.5 !top-1/2 !-translate-y-1/2" style={{ backgroundColor: styles.handleColor, border: '2px solid white' }} />
       </div>
       {data.isConfigured && (
